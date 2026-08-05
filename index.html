@@ -6,11 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>護理作業規範互動導覽系統 (圖形融合版)</title>
     <style>
+        /* CSS Variables for Responsive Scaling */
+        :root {
+            --app-max-width: 1200px;
+            --base-font-size: 16px;
+            --menu-font-size: 14px;
+            --title-font-size: 18px;
+            --canvas-height: 70vh; /* Viewport height for better scaling */
+            --min-canvas-height: 500px;
+        }
+
         body {
             font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 2vw; /* Responsive padding */
             background-color: #f4f6f9;
+            font-size: var(--base-font-size);
         }
 
         * {
@@ -18,67 +29,77 @@
         }
 
         .app-container {
-            max-width: 1000px;
+            max-width: var(--app-max-width);
             margin: 0 auto;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             background-color: #2c3e50;
             color: white;
-            padding: 20px;
+            padding: 2.5%;
             text-align: center;
         }
 
         .header h2 {
             margin: 0 0 10px 0;
-            font-size: 24px;
+            font-size: clamp(20px, 4vw, 28px); /* Responsive typography */
         }
 
         .header p {
             margin: 0;
             color: #bdc3c7;
-            font-size: 14px;
+            font-size: clamp(12px, 2vw, 16px);
         }
 
         .tabs {
             display: flex;
             background-color: #34495e;
+            flex-wrap: wrap; /* Allow wrapping on very small screens */
         }
 
         .tab-btn {
-            flex: 1;
+            flex: 1 1 auto; /* Flex grow and shrink */
             padding: 15px 10px;
             border: none;
             background: none;
             color: white;
-            font-size: 16px;
+            font-size: clamp(14px, 2.5vw, 18px);
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, font-weight 0.2s;
+            white-space: nowrap;
         }
 
-        .tab-btn:hover {
+        .tab-btn:hover, .tab-btn:focus-visible {
             background-color: #2c3e50;
+            outline: none;
         }
 
         .tab-btn.active {
             background-color: #3498db;
             font-weight: bold;
+            box-shadow: inset 0 -3px 0 rgba(255,255,255,0.3);
         }
 
         .content-area {
             position: relative;
-            height: 700px;
-            padding: 20px;
+            height: var(--canvas-height);
+            min-height: var(--min-canvas-height);
+            padding: 2%;
             display: none;
             background-color: #ecf0f1;
+            flex: 1; /* Take remaining space */
         }
 
         .content-area.active {
-            display: block;
+            display: flex; /* Changed to flex for centering canvas */
+            align-items: center;
+            justify-content: center;
         }
 
         .visual-canvas {
@@ -87,8 +108,9 @@
             height: 100%;
             border-radius: 8px;
             background: #ffffff;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            max-height: 1000px; /* Prevent it from getting too tall */
         }
 
         .base-wrapper {
@@ -106,10 +128,11 @@
             top: 50%;
             transform: translate(-50%, -50%);
             height: 100%;
+            width: 100%; /* Ensure it spans the width */
             max-width: 100%;
-            object-fit: contain;
+            object-fit: contain; /* Keeps aspect ratio */
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.4s ease-in-out;
             mix-blend-mode: multiply;
             filter: contrast(1.05);
         }
@@ -121,10 +144,11 @@
 
         .hotspots-overlay {
             position: absolute;
-            top: 0;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             height: 100%;
+            width: 100%; /* Match canvas width */
             z-index: 5;
             pointer-events: auto;
         }
@@ -133,135 +157,54 @@
             position: absolute;
             cursor: pointer;
             border-radius: 40%;
-            /* border: 2px dashed rgba(255,0,0,0.3); */
+            /* border: 2px dashed rgba(255,0,0,0.5); /* Uncomment to debug hotspots */
             z-index: 10;
+            transition: background-color 0.2s; /* Subtle hover effect on mobile */
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .hotspot:active {
+                background-color: rgba(52, 152, 219, 0.2);
+            }
         }
 
         /* 人形圖 (Tab1) 熱區 */
-        .ratio-human {
+        #canvas-tab1 .hotspots-overlay {
             aspect-ratio: 4 / 9;
+            width: auto; /* Let aspect ratio define width */
+            height: 100%;
         }
 
-        .hotspot-head {
-            top: 2%;
-            left: 35%;
-            width: 30%;
-            height: 15%;
-        }
-
-        .hotspot-chest {
-            top: 17%;
-            left: 25%;
-            width: 50%;
-            height: 18%;
-        }
-
-        .hotspot-abdomen {
-            top: 35%;
-            left: 30%;
-            width: 40%;
-            height: 15%;
-        }
-
-        .hotspot-body {
-            top: 50%;
-            left: 20%;
-            width: 60%;
-            height: 48%;
-        }
+        .hotspot-head { top: 2%; left: 35%; width: 30%; height: 15%; }
+        .hotspot-chest { top: 17%; left: 25%; width: 50%; height: 18%; }
+        .hotspot-abdomen { top: 35%; left: 30%; width: 40%; height: 15%; }
+        .hotspot-body { top: 50%; left: 20%; width: 60%; height: 48%; }
 
         /* 醫院圖 (Tab2) 熱區 */
-        .ratio-hospital {
+        #canvas-tab2 .hotspots-overlay {
             aspect-ratio: 16 / 9;
+            height: auto; /* Let aspect ratio define height */
             width: 100%;
+        }
+
+        .hotspot-opd { top: 40%; left: 7%; width: 22%; height: 35%; border-radius: 10px; } 
+        .hotspot-er { top: 70%; left: 36%; width: 20%; height: 20%; border-radius: 10px; } 
+        .hotspot-or { top: 15%; left: 48%; width: 22%; height: 25%; border-radius: 10px; } 
+        .hotspot-icu { top: 35%; left: 31%; width: 15%; height: 12%; border-radius: 10px; } 
+        .hotspot-pharmacy { top: 70%; left: 27%; width: 8%; height: 8%; border-radius: 10px; } 
+        .hotspot-physio { top: 48%; left: 48%; width: 22%; height: 22%; border-radius: 10px; } 
+        .hotspot-hospice { top: 15%; left: 8%; width: 22%; height: 20%; border-radius: 10px; } 
+        .hotspot-cancer { top: 15%; left: 31%; width: 15%; height: 18%; border-radius: 10px; } 
+
+        /* 桌面圖 (Tab3) 熱區 */
+         #canvas-tab3 .hotspots-overlay {
+            aspect-ratio: 16 / 9; /* Assuming desktop is 16:9 */
             height: auto;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            width: 100%;
         }
+        .hotspot-admin { top: 35%; left: 20%; width: 18%; height: 30%; border-radius: 10px; }
+        .hotspot-env { top: 35%; left: 45%; width: 18%; height: 30%; border-radius: 10px; }
 
-        .hotspot-opd {
-            top: 40%;
-            left: 7%;
-            width: 22%;
-            height: 35%;
-            border-radius: 10px;
-        }
-
-        .hotspot-er {
-            top: 70%;
-            left: 36%;
-            width: 20%;
-            height: 20%;
-            border-radius: 10px;
-        }
-
-        .hotspot-or {
-            top: 15%;
-            left: 48%;
-            width: 22%;
-            height: 25%;
-            border-radius: 10px;
-        }
-
-        .hotspot-icu {
-            top: 35%;
-            left: 31%;
-            width: 15%;
-            height: 12%;
-            border-radius: 10px;
-        }
-
-        .hotspot-pharmacy {
-            top: 70%;
-            left: 27%;
-            width: 8%;
-            height: 8%;
-            border-radius: 10px;
-        }
-
-        .hotspot-physio {
-            top: 48%;
-            left: 48%;
-            width: 22%;
-            height: 22%;
-            border-radius: 10px;
-        }
-
-        .hotspot-hospice {
-            top: 15%;
-            left: 8%;
-            width: 22%;
-            height: 20%;
-            border-radius: 10px;
-        }
-
-        .hotspot-cancer {
-            top: 15%;
-            left: 31%;
-            width: 15%;
-            height: 18%;
-            border-radius: 10px;
-        }
-
-        /* 桌面圖 (Tab3) 熱區 - 依據新圖面完全置中對齊 */
-        .hotspot-admin {
-            top: 45%;
-            left: 32%;
-            width: 15%;
-            height: 20%;
-            border-radius: 10px;
-        }
-
-        /* 左側資料夾 */
-        .hotspot-env {
-            top: 45%;
-            left: 53%;
-            width: 15%;
-            height: 20%;
-            border-radius: 10px;
-        }
-
-        /* 右側資料夾 */
 
         /* --- 彈出選單共通設定 --- */
         .protocols-container {
@@ -272,23 +215,25 @@
             height: 100%;
             pointer-events: none;
             z-index: 20;
+            overflow: hidden; /* Prevent popups from bleeding out of canvas */
         }
 
         .protocol-btn {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             border: 2px solid #3498db;
             border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            padding: 1.5%; /* Responsive padding */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             gap: 8px;
             min-width: 220px;
+            max-width: 300px; /* Cap width on large screens */
             opacity: 0;
             transform: scale(0.95);
             pointer-events: none;
-            transition: opacity 0.2s, transform 0.2s;
+            transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Snappy animation */
         }
 
         .protocol-btn.show,
@@ -299,9 +244,9 @@
         }
 
         .protocol-title {
-            font-size: 16px;
+            font-size: var(--title-font-size);
             color: #2980b9;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid #ecf0f1;
             padding-bottom: 8px;
             margin-bottom: 5px;
             font-weight: bold;
@@ -311,118 +256,55 @@
         }
 
         .protocol-item {
-            font-size: 14px;
-            color: #555;
+            font-size: var(--menu-font-size);
+            color: #444;
             display: block;
-            padding: 8px 10px;
+            padding: 10px 12px;
             background: #f8f9fa;
-            border-radius: 5px;
+            border-radius: 6px;
             text-decoration: none;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            line-height: 1.4;
         }
 
         .protocol-item:hover,
-        .protocol-item:active {
-            background: #ffeaa7;
+        .protocol-item:focus-visible {
+            background: #fff3e0;
             color: #d35400;
-            border-left: 3px solid #d35400;
+            border-left: 4px solid #d35400;
+            transform: translateX(2px);
+            outline: none;
         }
 
-        /* 人形圖選單定位 */
-        .pos-head {
-            top: 5%;
-            left: calc(50% + 140px);
+        /* --- Desktop Specific Positioning (Media Queries handle mobile) --- */
+        @media (min-width: 769px) {
+            /* 人形圖選單定位 */
+            .pos-head { top: 5%; left: calc(50% + 15%); } /* Percentage based offset */
+            .pos-chest { top: 18%; right: calc(50% + 15%); }
+            .pos-abdomen { top: 38%; left: calc(50% + 15%); }
+            .pos-body { top: 55%; right: calc(50% + 15%); }
+
+            /* 醫院圖選單定位 */
+            .pos-opd { top: 40%; left: 30%; }
+            .pos-er { top: 60%; left: 57%; }
+            .pos-or { top: 15%; left: 72%; }
+            .pos-icu { top: 35%; left: 48%; }
+            .pos-pharmacy { top: 70%; left: 10%; }
+            .pos-physio { top: 65%; left: 72%; }
+            .pos-hospice { top: 20%; left: 31%; }
+            .pos-cancer { top: 15%; left: 48%; }
+
+            /* 桌面圖選單定位 */
+            .pos-admin { top: 10%; left: 30%; right: auto; width: 250px; } 
+            .pos-env { top: 10%; left: 50%; right: auto; width: 250px; }   
         }
 
-        .pos-chest {
-            top: 18%;
-            right: calc(50% + 140px);
-        }
-
-        .pos-abdomen {
-            top: 38%;
-            left: calc(50% + 140px);
-        }
-
-        .pos-body {
-            top: 55%;
-            right: calc(50% + 140px);
-        }
-
-        /* 醫院圖選單定位 */
-        .pos-opd {
-            top: 40%;
-            left: 30%;
-        }
-
-        .pos-er {
-            top: 60%;
-            left: 57%;
-        }
-
-        .pos-or {
-            top: 15%;
-            left: 72%;
-        }
-
-        .pos-icu {
-            top: 35%;
-            left: 48%;
-        }
-
-        .pos-pharmacy {
-            top: 70%;
-            left: 10%;
-        }
-
-        .pos-physio {
-            top: 65%;
-            left: 72%;
-        }
-
-        .pos-hospice {
-            top: 20%;
-            left: 31%;
-        }
-
-        .pos-cancer {
-            top: 15%;
-            left: 48%;
-        }
-
-        .hosp-btn {
-            border-color: #e67e22;
-        }
-
-        .hosp-title {
-            color: #d35400;
-        }
-
-        /* 桌面圖選單定位 - 拉近距離 */
-        .desk-btn {
-            border-color: #27ae60;
-        }
-
-        .desk-title {
-            color: #1e8449;
-        }
-
-        .pos-admin {
-            top: 15%;
-            left: 25%;
-            width: 250px;
-        }
-
-        /* 左側資料夾上方偏左 */
-        .pos-env {
-            top: 15%;
-            left: 50%;
-            width: 250px;
-        }
-
-        /* 右側資料夾上方偏右 */
+        .hosp-btn { border-color: #e67e22; }
+        .hosp-title { color: #d35400; }
+        .desk-btn { border-color: #27ae60; } 
+        .desk-title { color: #1e8449; }
 
         .bg-icon {
             position: absolute;
@@ -443,82 +325,129 @@
             pointer-events: auto;
         }
 
+        /* ================= Mobile & Tablet Layout (Responsive) ================= */
         @media (max-width: 768px) {
-            body {
-                padding: 0;
-                background-color: white;
+            body { 
+                padding: 0; 
+                background-color: white; 
             }
 
-            .app-container {
-                border-radius: 0;
-                box-shadow: none;
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
+            .app-container { 
+                border-radius: 0; 
+                box-shadow: none; 
+                height: 100vh; 
+                height: 100dvh; /* Use dynamic viewport height if available */
+                display: flex; 
+                flex-direction: column; 
             }
 
-            .header {
-                padding: 15px 10px;
-            }
-
-            .header h2 {
-                font-size: 20px;
-            }
-
-            .content-area {
-                height: auto;
-                flex: 1;
-                display: flex !important;
-                flex-direction: column;
-                padding: 15px;
-                overflow-y: auto;
-                background-color: #f4f6f9;
-            }
-
-            .content-area:not(.active) {
-                display: none !important;
-            }
-
-            .base-wrapper {
+            .header { padding: 15px 10px; }
+            
+            .tabs {
                 position: sticky;
                 top: 0;
-                height: 35vh;
-                min-height: 250px;
-                background: white;
-                z-index: 10;
-                border-radius: 12px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-                margin-bottom: 20px;
-                flex-shrink: 0;
+                z-index: 100;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             }
 
-            .base-image {
-                height: 95%;
+            .content-area { 
+                height: auto; 
+                flex: 1; 
+                display: flex !important; /* Override default hidden, manage visibility via active class on wrapper */
+                flex-direction: column; 
+                padding: 0; /* Remove padding to let image bleed to edge */
+                overflow-y: auto; 
+                background-color: #f4f6f9; 
             }
 
-            .desktop-only {
-                display: none;
-            }
+            .content-area:not(.active) { display: none !important; }
 
-            .protocols-container {
-                position: relative;
+            .visual-canvas {
+                border-radius: 0;
+                box-shadow: none;
                 display: flex;
                 flex-direction: column;
-                gap: 15px;
-                pointer-events: auto;
+                height: auto;
+                overflow: visible; /* Let lists flow naturally */
             }
 
-            .protocol-btn {
-                position: relative;
-                opacity: 1 !important;
-                transform: scale(1) !important;
+            /* The image area becomes a sticky header on mobile */
+            .base-wrapper { 
+                position: relative; /* Not sticky, scrolling feels more natural here */
+                height: 40vh; /* Fixed height for image area */
+                min-height: 250px; 
+                background: white; 
+                z-index: 10; 
+                border-bottom: 1px solid #e0e0e0;
+                flex-shrink: 0; 
                 width: 100%;
-                top: auto !important;
-                left: auto !important;
-                right: auto !important;
-                pointer-events: auto;
-                display: flex !important;
+                margin-bottom: 0;
             }
+
+            .base-image { 
+                height: 100%; 
+                width: 100%;
+                object-fit: contain;
+                padding: 10px;
+            }
+
+            /* Disable interactive hotspots on mobile - too hard to tap */
+            .desktop-only { display: none; }
+            .canvas-bg-clickable { display: none; }
+
+            /* Transform popup menus into a vertical scrolling list */
+            .protocols-container { 
+                position: relative; 
+                display: flex; 
+                flex-direction: column; 
+                gap: 0; /* Remove gap, use borders */
+                pointer-events: auto; 
+                padding: 0;
+                height: auto;
+                background: #f4f6f9;
+            }
+
+            .protocol-btn { 
+                position: relative; 
+                opacity: 1 !important; 
+                transform: scale(1) !important; 
+                width: 100%; 
+                max-width: 100%;
+                top: auto !important; 
+                left: auto !important; 
+                right: auto !important; 
+                pointer-events: auto; 
+                display: flex !important; 
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid #ddd;
+                box-shadow: none;
+                background-color: transparent;
+                padding: 20px;
+            }
+
+            .protocol-title {
+                font-size: 18px;
+                border-bottom: none;
+                padding-bottom: 0;
+                margin-bottom: 15px;
+            }
+
+            .protocol-item {
+                background: white;
+                border: 1px solid #eee;
+                border-left: 4px solid #3498db;
+                margin-bottom: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            }
+            
+            .protocol-item:hover, .protocol-item:active {
+                transform: none;
+            }
+
+            /* Mobile Specific Colors */
+            .hosp-btn .protocol-item { border-left-color: #e67e22; }
+            .desk-btn .protocol-item { border-left-color: #27ae60; }
         }
     </style>
 </head>
@@ -528,7 +457,7 @@
     <div class="app-container">
         <div class="header">
             <h2>護理作業規範互動導覽系統</h2>
-            <p>點擊人體或醫院區域可固定顯示關聯規範，點擊空白處可恢復初始狀態</p>
+            <p>點擊區域可固定顯示關聯規範，點擊空白處可恢復初始狀態</p>
         </div>
 
         <div class="tabs">
@@ -543,8 +472,7 @@
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
 
                 <div class="base-wrapper">
-                    <img id="base-human" src="./Gemini_Generated_Image_xz9lsqxz9lsqxz9l.png"
-                        class="base-image active-img">
+                    <img id="base-human" src="./Gemini_Generated_Image_xz9lsqxz9lsqxz9l.png" class="base-image active-img">
                     <img id="img-nervous" src="./Nervous_system.png" class="base-image">
                     <img id="img-circulatory" src="./Circulatory_System.png" class="base-image">
                     <img id="img-respiratory" src="./Respiratory_system.png" class="base-image">
@@ -557,25 +485,24 @@
 
                     <div class="hotspots-overlay ratio-human desktop-only">
                         <a class="hotspot hotspot-head"
-                            href="https://drive.google.com/drive/folders/12VOsJeTQ-9hwwenurnduTRP0vrgo_xx7?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab1', 'head', 'img-nervous')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab1', 'head', 'img-nervous')"
                             onmouseleave="leaveHoverRegion('tab1')"
                             onclick="lockRegion('tab1', 'head', 'img-nervous')"></a>
                         <a class="hotspot hotspot-chest"
-                            href="https://drive.google.com/drive/folders/1E37ZeXwyxT4jpMZoeNtkM1Fh1fgbKSwz?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab1', 'chest', 'img-circulatory')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab1', 'chest', 'img-circulatory')"
                             onmouseleave="leaveHoverRegion('tab1')"
                             onclick="lockRegion('tab1', 'chest', 'img-circulatory')"></a>
                         <a class="hotspot hotspot-abdomen"
-                            href="https://drive.google.com/drive/folders/1NfBIMXB8LZme0O1S5afTLTAZEEm5T7h7?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab1', 'abdomen', 'img-digestive')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab1', 'abdomen', 'img-digestive')"
                             onmouseleave="leaveHoverRegion('tab1')"
                             onclick="lockRegion('tab1', 'abdomen', 'img-digestive')"></a>
                         <a class="hotspot hotspot-body"
-                            href="https://drive.google.com/drive/folders/1omd_6gZsQcPwunujpwxd84qgLnrx8e92?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab1', 'body', 'img-vital')"
-                            onmouseleave="leaveHoverRegion('tab1')"
-                            onclick="lockRegion('tab1', 'body', 'img-vital')"></a>
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab1', 'body', 'img-vital')"
+                            onmouseleave="leaveHoverRegion('tab1')" onclick="lockRegion('tab1', 'body', 'img-vital')"></a>
                     </div>
                 </div>
 
@@ -583,18 +510,19 @@
                     <div id="menu-tab1-head" class="protocol-btn pos-head" onmouseenter="enterMenu('tab1')"
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🧠 頭部 (神經系統)</div>
-                        <a class="protocol-item line-link"
+                        <!-- Added target="_blank" and class="ext-link" for specific targeting if needed -->
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/12VOsJeTQ-9hwwenurnduTRP0vrgo_xx7?usp=drive_link"
                             target="_blank">015 神經感覺系統</a>
                     </div>
                     <div id="menu-tab1-chest" class="protocol-btn pos-chest" onmouseenter="enterMenu('tab1')"
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🫁 胸部 (心肺系統)</div>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-circulatory')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-circulatory')"
                             ontouchstart="hoverItem('tab1', 'img-circulatory')"
                             href="https://drive.google.com/drive/folders/1E37ZeXwyxT4jpMZoeNtkM1Fh1fgbKSwz?usp=drive_link"
                             target="_blank">013 心臟血管系統護理</a>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-respiratory')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-respiratory')"
                             ontouchstart="hoverItem('tab1', 'img-respiratory')"
                             href="https://drive.google.com/drive/folders/1JJtMeUILg1M1nRFslp1-cR5Dv0qutPmY?usp=drive_link"
                             target="_blank">014 呼吸系統</a>
@@ -602,11 +530,11 @@
                     <div id="menu-tab1-abdomen" class="protocol-btn pos-abdomen" onmouseenter="enterMenu('tab1')"
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🩺 腹部 (消化與泌尿)</div>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-digestive')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-digestive')"
                             ontouchstart="hoverItem('tab1', 'img-digestive')"
                             href="https://drive.google.com/drive/folders/1NfBIMXB8LZme0O1S5afTLTAZEEm5T7h7?usp=drive_link"
                             target="_blank">012 消化道系統護理</a>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-urinary')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-urinary')"
                             ontouchstart="hoverItem('tab1', 'img-urinary')"
                             href="https://drive.google.com/drive/folders/1VIhzRwqwzf36dcTHrkgJAo6LJIuUDhke?usp=drive_link"
                             target="_blank">016 腎臟泌尿系統</a>
@@ -614,19 +542,19 @@
                     <div id="menu-tab1-body" class="protocol-btn pos-body" onmouseenter="enterMenu('tab1')"
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🩸 全身性 (體徵與皮膚)</div>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-vital')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-vital')"
                             ontouchstart="hoverItem('tab1', 'img-vital')"
                             href="https://drive.google.com/drive/folders/1omd_6gZsQcPwunujpwxd84qgLnrx8e92?usp=drive_link"
                             target="_blank">001 生命徵象.疼痛.情緒困擾</a>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-fluid')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-fluid')"
                             ontouchstart="hoverItem('tab1', 'img-fluid')"
                             href="https://drive.google.com/drive/folders/1vSrsuosLLVV4ocY4h2b1eDl8C6BwYxB7?usp=drive_link"
                             target="_blank">002 體液供給</a>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-comfort')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-comfort')"
                             ontouchstart="hoverItem('tab1', 'img-comfort')"
                             href="https://drive.google.com/drive/folders/1ODrOuVaCIt0mE9BH7CGAmJtQ0pQFqk9T?usp=drive_link"
                             target="_blank">011 舒適需要</a>
-                        <a class="protocol-item line-link" onmouseenter="hoverItem('tab1', 'img-wound')"
+                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-wound')"
                             ontouchstart="hoverItem('tab1', 'img-wound')"
                             href="https://drive.google.com/drive/folders/1FQqTWZunZp0pbhMKfx-yrLtiZ0W5PZnR?usp=drive_link"
                             target="_blank">020 傷口照護</a>
@@ -641,75 +569,47 @@
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab2')"></div>
 
                 <div class="base-wrapper">
-                    <!-- 預設醫院平面圖 -->
-                    <img id="base-hospital" src="./hostipal.png" class="base-image active-img"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
+                    <img id="base-hospital" src="./hostipal.png" class="base-image active-img">
+                    <img id="img-opd" src="./OPD.png" class="base-image">
+                    <img id="img-er" src="./ER.png" class="base-image">
+                    <img id="img-or" src="./OR.png" class="base-image">
+                    <img id="img-icu" src="./hostipal2.png" class="base-image">
+                    <img id="img-pharmacy" src="./Pharmacy.png" class="base-image">
+                    <img id="img-physio" src="./RD-NM-Physio.png" class="base-image">
+                    <img id="img-cancer" src="./Cancer Care.png" class="base-image">
+                    <img id="img-hospice" src="./Hospice care.png" class="base-image">
 
-                    <!-- 各區域亮起圖 -->
-                    <img id="img-opd" src="./OPD.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-er" src="./ER.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-or" src="./OR.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-icu" src="./hostipal2.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-pharmacy" src="./Pharmacy.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-physio" src="./RD-NM-Physio.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-cancer" src="./Cancer Care.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-hospice" src="./Hospice care.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-
-                    <!-- 醫院圖熱區 -->
                     <div class="hotspots-overlay ratio-hospital desktop-only">
                         <a class="hotspot hotspot-opd"
-                            href="https://drive.google.com/drive/folders/1YxIvPCKZmObEV49wHzL1Ig_CMtxIUEkt?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
                             onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'opd', 'img-opd')"></a>
-
                         <a class="hotspot hotspot-er"
-                            href="https://drive.google.com/drive/folders/1VM4nAxDPZ6TukzIlfTTFqtcBzwoczTDz?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab2', 'er', 'img-er')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'er', 'img-er')"
                             onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'er', 'img-er')"></a>
-
                         <a class="hotspot hotspot-or"
-                            href="https://drive.google.com/drive/folders/1dRixMwUWKFF8ra9BO0UMXQF4ctlwPu5P?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab2', 'or', 'img-or')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'or', 'img-or')"
                             onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'or', 'img-or')"></a>
-
-                        <!-- ICU / 重症 -->
-                        <a class="hotspot hotspot-icu" href="#" target="_blank"
-                            onmouseenter="hoverRegion('tab2', 'icu', 'img-icu')" onmouseleave="leaveHoverRegion('tab2')"
-                            onclick="lockRegion('tab2', 'icu', 'img-icu')"></a>
-
-                        <!-- 藥局 -->
                         <a class="hotspot hotspot-pharmacy"
-                            href="https://drive.google.com/drive/folders/1JEUwKq4fzA9j4O-WjchVhgdWmDpIZ5k4?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab2', 'pharmacy', 'img-pharmacy')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'pharmacy', 'img-pharmacy')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'pharmacy', 'img-pharmacy')"></a>
-
-                        <!-- 放射/生理/檢驗 -->
                         <a class="hotspot hotspot-physio"
-                            href="https://drive.google.com/drive/folders/1vGjMz_JR3A7bEJkKX4u8QKQ-xA6hwRii?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab2', 'physio', 'img-physio')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'physio', 'img-physio')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'physio', 'img-physio')"></a>
-
-                        <!-- 安寧療護 -->
                         <a class="hotspot hotspot-hospice"
-                            href="https://drive.google.com/drive/folders/1cp0v1T-RggkdamHnsSw658JSivPHyZsm?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab2', 'hospice', 'img-hospice')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'hospice', 'img-hospice')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'hospice', 'img-hospice')"></a>
-
-                        <!-- 癌症照護 -->
                         <a class="hotspot hotspot-cancer"
-                            href="https://drive.google.com/drive/folders/1Wj3exP9S_cUY1dGlbkhSyB5qXhOq2ZRH?usp=drive_link"
-                            target="_blank" onmouseenter="hoverRegion('tab2', 'cancer', 'img-cancer')"
+                            href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'cancer', 'img-cancer')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'cancer', 'img-cancer')"></a>
                     </div>
@@ -719,61 +619,49 @@
                     <div id="menu-tab2-opd" class="protocol-btn hosp-btn pos-opd" onmouseenter="enterMenu('tab2')"
                         onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🟦 門診區域 (OPD)</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1YxIvPCKZmObEV49wHzL1Ig_CMtxIUEkt?usp=drive_link"
                             target="_blank">003 醫囑.會診</a>
                     </div>
-
                     <div id="menu-tab2-er" class="protocol-btn hosp-btn pos-er" onmouseenter="enterMenu('tab2')"
                         onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🟧 急診區域 (ER)</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1VM4nAxDPZ6TukzIlfTTFqtcBzwoczTDz?usp=drive_link"
                             target="_blank">006 緊急救護</a>
                     </div>
-
                     <div id="menu-tab2-or" class="protocol-btn hosp-btn pos-or" onmouseenter="enterMenu('tab2')"
                         onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🟥 手術區域 (OR)</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1dRixMwUWKFF8ra9BO0UMXQF4ctlwPu5P?usp=drive_link"
                             target="_blank">004 手術護理</a>
                     </div>
-
-                    <div id="menu-tab2-icu" class="protocol-btn hosp-btn pos-icu" onmouseenter="enterMenu('tab2')"
+                    <div id="menu-tab2-pharmacy" class="protocol-btn hosp-btn pos-pharmacy" onmouseenter="enterMenu('tab2')"
                         onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟨 重症區域 (ICU)</div>
-                        <a class="protocol-item line-link" href="#" target="_blank">重症相關規範 (無提供代碼)</a>
-                    </div>
-
-                    <div id="menu-tab2-pharmacy" class="protocol-btn hosp-btn pos-pharmacy"
-                        onmouseenter="enterMenu('tab2')" onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🟩 藥物安全 (藥局)</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1JEUwKq4fzA9j4O-WjchVhgdWmDpIZ5k4?usp=drive_link"
                             target="_blank">010 藥物安全</a>
                     </div>
-
                     <div id="menu-tab2-physio" class="protocol-btn hosp-btn pos-physio" onmouseenter="enterMenu('tab2')"
                         onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🟪 放射/生理/檢驗/核醫</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1vGjMz_JR3A7bEJkKX4u8QKQ-xA6hwRii?usp=drive_link"
                             target="_blank">019 放射、生理、檢驗、核醫</a>
                     </div>
-
-                    <div id="menu-tab2-hospice" class="protocol-btn hosp-btn pos-hospice"
-                        onmouseenter="enterMenu('tab2')" onmouseleave="leaveMenu('tab2')">
+                    <div id="menu-tab2-hospice" class="protocol-btn hosp-btn pos-hospice" onmouseenter="enterMenu('tab2')"
+                        onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🌸 安寧療護</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1cp0v1T-RggkdamHnsSw658JSivPHyZsm?usp=drive_link"
                             target="_blank">018 安寧療護及臨終護理</a>
                     </div>
-
                     <div id="menu-tab2-cancer" class="protocol-btn hosp-btn pos-cancer" onmouseenter="enterMenu('tab2')"
                         onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🟨 癌症照護</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1Wj3exP9S_cUY1dGlbkhSyB5qXhOq2ZRH?usp=drive_link"
                             target="_blank">017 癌症照護</a>
                     </div>
@@ -787,27 +675,18 @@
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab3')"></div>
 
                 <div class="base-wrapper">
-                    <!-- 預設桌面底圖 -->
-                    <img id="base-desktop" src="./desktop.png" class="base-image active-img"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
+                    <img id="base-desktop" src="./desktop.png" class="base-image active-img">
+                    <img id="img-admin" src="./Nursing Administration.png" class="base-image">
+                    <img id="img-env" src="./Environment & Infection Control.png" class="base-image">
 
-                    <!-- 各區域亮起圖 -->
-                    <img id="img-admin" src="./Nursing Administration.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-                    <img id="img-env" src="./Environment & Infection Control.png" class="base-image"
-                        style="width: 100%; height: auto; top: 50%; transform: translate(-50%, -50%);">
-
-                    <!-- 桌面圖熱區 -->
                     <div class="hotspots-overlay ratio-hospital desktop-only">
-                        <!-- 對應左側的護理行政資料夾 -->
                         <a class="hotspot hotspot-admin" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab3', 'admin', 'img-admin')"
-                            onmouseleave="leaveHoverRegion('tab3')"
+                            onmouseleave="leaveHoverRegion('tab3')" 
                             onclick="lockRegion('tab3', 'admin', 'img-admin')"></a>
-
-                        <!-- 對應右側的環境感控資料夾 -->
                         <a class="hotspot hotspot-env" href="javascript:void(0);"
-                            onmouseenter="hoverRegion('tab3', 'env', 'img-env')" onmouseleave="leaveHoverRegion('tab3')"
+                            onmouseenter="hoverRegion('tab3', 'env', 'img-env')"
+                            onmouseleave="leaveHoverRegion('tab3')" 
                             onclick="lockRegion('tab3', 'env', 'img-env')"></a>
                     </div>
                 </div>
@@ -816,24 +695,23 @@
                     <div id="menu-tab3-admin" class="protocol-btn desk-btn pos-admin" onmouseenter="enterMenu('tab3')"
                         onmouseleave="leaveMenu('tab3')">
                         <div class="protocol-title desk-title">📋 護理行政與交班</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1McWp-B02Lmik20HePdzV_CBaKSFVFMBO?usp=drive_link"
                             target="_blank">005 出入院管理</a>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1AhJtnIKIGepHrB7NvqTdgOyxgtj1deas?usp=drive_link"
                             target="_blank">021 護理交班及其他庶務</a>
                     </div>
-
                     <div id="menu-tab3-env" class="protocol-btn desk-btn pos-env" onmouseenter="enterMenu('tab3')"
                         onmouseleave="leaveMenu('tab3')">
                         <div class="protocol-title desk-title">🛡️ 環境與感染控制</div>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1BZI7cb09tgDLejy4EHjfnsvH8CKm2qF5?usp=drive_link"
                             target="_blank">007 權益維護</a>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1IpkVTM-uRCQLxoX4P_nl07W9dttU1F6Y?usp=drive_link"
                             target="_blank">008 醫療環境</a>
-                        <a class="protocol-item line-link"
+                        <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1ULWwyTdcmb0rW9Nvy-LqC1XcX-_WNcmc?usp=drive_link"
                             target="_blank">009 感染管制委員會</a>
                     </div>
@@ -936,19 +814,30 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            const isLine = navigator.userAgent.includes("Line") || navigator.userAgent.includes("LINE");
-            if (isLine) {
-                document.querySelectorAll('a.line-link, a.hotspot').forEach(link => {
-                    link.addEventListener('click', function (e) {
-                        let url = this.href;
-                        if (!url.includes('openExternalBrowser=1')) {
-                            e.preventDefault();
-                            url += (url.includes('?') ? '&' : '?') + 'openExternalBrowser=1';
-                            window.location.href = url;
-                        }
-                    });
-                });
-            }
+            // Enhanced external browser redirection script
+            const openInExternalBrowser = function (e) {
+                let url = this.href;
+                // Check if it's already a LINE external browser link to avoid loops
+                if (!url.includes('openExternalBrowser=1')) {
+                    e.preventDefault();
+                    
+                    // The standard way LINE suggests to open in external browser
+                    const separator = url.includes('?') ? '&' : '?';
+                    const newUrl = url + separator + 'openExternalBrowser=1';
+                    
+                    // Fallback mechanism: try opening in a new window/tab first
+                    // Mobile browsers often handle target="_blank" by opening a new app or tab
+                    window.open(newUrl, '_blank');
+                    
+                    // Optional: If you want to force navigation in the current window as a fallback
+                    // setTimeout(() => { window.location.href = newUrl; }, 100);
+                }
+            };
+
+            // Select all links that should open externally. I've added the class 'ext-link' to them in the HTML.
+            document.querySelectorAll('a.ext-link').forEach(link => {
+                link.addEventListener('click', openInExternalBrowser);
+            });
         });
     </script>
 </body>
