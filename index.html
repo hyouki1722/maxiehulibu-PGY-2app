@@ -12,14 +12,16 @@
             --base-font-size: 16px;
             --menu-font-size: 14px;
             --title-font-size: 18px;
-            --canvas-height: 70vh; /* Viewport height for better scaling */
+            --canvas-height: 70vh;
+            /* Viewport height for better scaling */
             --min-canvas-height: 500px;
         }
 
         body {
             font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
             margin: 0;
-            padding: 2vw; /* Responsive padding */
+            padding: 2vw;
+            /* Responsive padding */
             background-color: #f4f6f9;
             font-size: var(--base-font-size);
         }
@@ -48,7 +50,8 @@
 
         .header h2 {
             margin: 0 0 10px 0;
-            font-size: clamp(20px, 4vw, 28px); /* Responsive typography */
+            font-size: clamp(20px, 4vw, 28px);
+            /* Responsive typography */
         }
 
         .header p {
@@ -60,11 +63,13 @@
         .tabs {
             display: flex;
             background-color: #34495e;
-            flex-wrap: wrap; /* Allow wrapping on very small screens */
+            flex-wrap: wrap;
+            /* Allow wrapping on very small screens */
         }
 
         .tab-btn {
-            flex: 1 1 auto; /* Flex grow and shrink */
+            flex: 1 1 auto;
+            /* Flex grow and shrink */
             padding: 15px 10px;
             border: none;
             background: none;
@@ -75,7 +80,8 @@
             white-space: nowrap;
         }
 
-        .tab-btn:hover, .tab-btn:focus-visible {
+        .tab-btn:hover,
+        .tab-btn:focus-visible {
             background-color: #2c3e50;
             outline: none;
         }
@@ -83,7 +89,7 @@
         .tab-btn.active {
             background-color: #3498db;
             font-weight: bold;
-            box-shadow: inset 0 -3px 0 rgba(255,255,255,0.3);
+            box-shadow: inset 0 -3px 0 rgba(255, 255, 255, 0.3);
         }
 
         .content-area {
@@ -93,13 +99,13 @@
             padding: 2%;
             display: none;
             background-color: #ecf0f1;
-            flex: 1; /* Take remaining space */
+            flex: 1;
+            /* Take remaining space */
         }
 
         .content-area.active {
-            display: flex; /* Changed to flex for centering canvas */
-            align-items: center;
-            justify-content: center;
+            display: block;
+            /* 取消 flex 置中，避免絕對定位子元素導致高度塌陷 */
         }
 
         .visual-canvas {
@@ -110,7 +116,8 @@
             background: #ffffff;
             box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            max-height: 1000px; /* Prevent it from getting too tall */
+            max-height: 1000px;
+            /* Prevent it from getting too tall */
         }
 
         .base-wrapper {
@@ -128,9 +135,11 @@
             top: 50%;
             transform: translate(-50%, -50%);
             height: 100%;
-            width: 100%; /* Ensure it spans the width */
+            width: 100%;
+            /* Ensure it spans the width */
             max-width: 100%;
-            object-fit: contain; /* Keeps aspect ratio */
+            object-fit: contain;
+            /* Keeps aspect ratio */
             opacity: 0;
             transition: opacity 0.4s ease-in-out;
             mix-blend-mode: multiply;
@@ -148,7 +157,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
             height: 100%;
-            width: 100%; /* Match canvas width */
+            width: 100%;
+            /* Match canvas width */
             z-index: 5;
             pointer-events: auto;
         }
@@ -159,7 +169,8 @@
             border-radius: 40%;
             /* border: 2px dashed rgba(255,0,0,0.5); /* Uncomment to debug hotspots */
             z-index: 10;
-            transition: background-color 0.2s; /* Subtle hover effect on mobile */
+            transition: background-color 0.2s;
+            /* Subtle hover effect on mobile */
         }
 
         @media (hover: none) and (pointer: coarse) {
@@ -171,39 +182,134 @@
         /* 人形圖 (Tab1) 熱區 */
         #canvas-tab1 .hotspots-overlay {
             aspect-ratio: 4 / 9;
-            width: auto; /* Let aspect ratio define width */
+            width: auto;
+            /* Let aspect ratio define width */
             height: 100%;
         }
 
-        .hotspot-head { top: 2%; left: 35%; width: 30%; height: 15%; }
-        .hotspot-chest { top: 17%; left: 25%; width: 50%; height: 18%; }
-        .hotspot-abdomen { top: 35%; left: 30%; width: 40%; height: 15%; }
-        .hotspot-body { top: 50%; left: 20%; width: 60%; height: 48%; }
+        .hotspot-head {
+            top: 2%;
+            left: 35%;
+            width: 30%;
+            height: 15%;
+        }
+
+        .hotspot-chest {
+            top: 17%;
+            left: 25%;
+            width: 50%;
+            height: 18%;
+        }
+
+        .hotspot-abdomen {
+            top: 35%;
+            left: 30%;
+            width: 40%;
+            height: 15%;
+        }
+
+        .hotspot-body {
+            top: 50%;
+            left: 20%;
+            width: 60%;
+            height: 48%;
+        }
 
         /* 醫院圖 (Tab2) 熱區 */
         #canvas-tab2 .hotspots-overlay {
             aspect-ratio: 16 / 9;
-            height: auto; /* Let aspect ratio define height */
+            height: auto;
+            /* Let aspect ratio define height */
             width: 100%;
         }
 
-        .hotspot-opd { top: 40%; left: 7%; width: 22%; height: 35%; border-radius: 10px; } 
-        .hotspot-er { top: 70%; left: 36%; width: 20%; height: 20%; border-radius: 10px; } 
-        .hotspot-or { top: 15%; left: 48%; width: 22%; height: 25%; border-radius: 10px; } 
-        .hotspot-icu { top: 35%; left: 31%; width: 15%; height: 12%; border-radius: 10px; } 
-        .hotspot-pharmacy { top: 70%; left: 27%; width: 8%; height: 8%; border-radius: 10px; } 
-        .hotspot-physio { top: 48%; left: 48%; width: 22%; height: 22%; border-radius: 10px; } 
-        .hotspot-hospice { top: 15%; left: 8%; width: 22%; height: 20%; border-radius: 10px; } 
-        .hotspot-cancer { top: 15%; left: 31%; width: 15%; height: 18%; border-radius: 10px; } 
+        .hotspot-opd {
+            top: 40%;
+            left: 7%;
+            width: 22%;
+            height: 35%;
+            border-radius: 10px;
+        }
+
+        .hotspot-er {
+            top: 70%;
+            left: 36%;
+            width: 20%;
+            height: 20%;
+            border-radius: 10px;
+        }
+
+        .hotspot-or {
+            top: 15%;
+            left: 48%;
+            width: 22%;
+            height: 25%;
+            border-radius: 10px;
+        }
+
+        .hotspot-icu {
+            top: 35%;
+            left: 31%;
+            width: 15%;
+            height: 12%;
+            border-radius: 10px;
+        }
+
+        .hotspot-pharmacy {
+            top: 70%;
+            left: 27%;
+            width: 8%;
+            height: 8%;
+            border-radius: 10px;
+        }
+
+        .hotspot-physio {
+            top: 48%;
+            left: 48%;
+            width: 22%;
+            height: 22%;
+            border-radius: 10px;
+        }
+
+        .hotspot-hospice {
+            top: 15%;
+            left: 8%;
+            width: 22%;
+            height: 20%;
+            border-radius: 10px;
+        }
+
+        .hotspot-cancer {
+            top: 15%;
+            left: 31%;
+            width: 15%;
+            height: 18%;
+            border-radius: 10px;
+        }
 
         /* 桌面圖 (Tab3) 熱區 */
-         #canvas-tab3 .hotspots-overlay {
-            aspect-ratio: 16 / 9; /* Assuming desktop is 16:9 */
+        #canvas-tab3 .hotspots-overlay {
+            aspect-ratio: 16 / 9;
+            /* Assuming desktop is 16:9 */
             height: auto;
             width: 100%;
         }
-        .hotspot-admin { top: 35%; left: 20%; width: 18%; height: 30%; border-radius: 10px; }
-        .hotspot-env { top: 35%; left: 45%; width: 18%; height: 30%; border-radius: 10px; }
+
+        .hotspot-admin {
+            top: 35%;
+            left: 20%;
+            width: 18%;
+            height: 30%;
+            border-radius: 10px;
+        }
+
+        .hotspot-env {
+            top: 35%;
+            left: 45%;
+            width: 18%;
+            height: 30%;
+            border-radius: 10px;
+        }
 
 
         /* --- 彈出選單共通設定 --- */
@@ -215,7 +321,8 @@
             height: 100%;
             pointer-events: none;
             z-index: 20;
-            overflow: hidden; /* Prevent popups from bleeding out of canvas */
+            overflow: hidden;
+            /* Prevent popups from bleeding out of canvas */
         }
 
         .protocol-btn {
@@ -223,17 +330,20 @@
             background-color: rgba(255, 255, 255, 0.98);
             border: 2px solid #3498db;
             border-radius: 10px;
-            padding: 1.5%; /* Responsive padding */
+            padding: 1.5%;
+            /* Responsive padding */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             gap: 8px;
             min-width: 220px;
-            max-width: 300px; /* Cap width on large screens */
+            max-width: 300px;
+            /* Cap width on large screens */
             opacity: 0;
             transform: scale(0.95);
             pointer-events: none;
-            transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Snappy animation */
+            transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Snappy animation */
         }
 
         .protocol-btn.show,
@@ -280,31 +390,108 @@
 
         /* --- Desktop Specific Positioning (Media Queries handle mobile) --- */
         @media (min-width: 769px) {
+
+            /* 強制讓電腦版按鈕預設保持顯示，不再需要等待 hover 才出現 */
+            .protocol-btn {
+                opacity: 1;
+                pointer-events: auto;
+                transform: scale(1);
+            }
+
             /* 人形圖選單定位 */
-            .pos-head { top: 5%; left: calc(50% + 15%); } /* Percentage based offset */
-            .pos-chest { top: 18%; right: calc(50% + 15%); }
-            .pos-abdomen { top: 38%; left: calc(50% + 15%); }
-            .pos-body { top: 55%; right: calc(50% + 15%); }
+            .pos-head {
+                top: 5%;
+                left: calc(50% + 15%);
+            }
+
+            /* Percentage based offset */
+            .pos-chest {
+                top: 18%;
+                right: calc(50% + 15%);
+            }
+
+            .pos-abdomen {
+                top: 38%;
+                left: calc(50% + 15%);
+            }
+
+            .pos-body {
+                top: 55%;
+                right: calc(50% + 15%);
+            }
 
             /* 醫院圖選單定位 */
-            .pos-opd { top: 40%; left: 30%; }
-            .pos-er { top: 60%; left: 57%; }
-            .pos-or { top: 15%; left: 72%; }
-            .pos-icu { top: 35%; left: 48%; }
-            .pos-pharmacy { top: 70%; left: 10%; }
-            .pos-physio { top: 65%; left: 72%; }
-            .pos-hospice { top: 20%; left: 31%; }
-            .pos-cancer { top: 15%; left: 48%; }
+            .pos-opd {
+                top: 40%;
+                left: 30%;
+            }
+
+            .pos-er {
+                top: 60%;
+                left: 57%;
+            }
+
+            .pos-or {
+                top: 15%;
+                left: 72%;
+            }
+
+            .pos-icu {
+                top: 35%;
+                left: 48%;
+            }
+
+            .pos-pharmacy {
+                top: 70%;
+                left: 10%;
+            }
+
+            .pos-physio {
+                top: 65%;
+                left: 72%;
+            }
+
+            .pos-hospice {
+                top: 20%;
+                left: 31%;
+            }
+
+            .pos-cancer {
+                top: 15%;
+                left: 48%;
+            }
 
             /* 桌面圖選單定位 */
-            .pos-admin { top: 10%; left: 30%; right: auto; width: 250px; } 
-            .pos-env { top: 10%; left: 50%; right: auto; width: 250px; }   
+            .pos-admin {
+                top: 10%;
+                left: 30%;
+                right: auto;
+                width: 250px;
+            }
+
+            .pos-env {
+                top: 10%;
+                left: 50%;
+                right: auto;
+                width: 250px;
+            }
         }
 
-        .hosp-btn { border-color: #e67e22; }
-        .hosp-title { color: #d35400; }
-        .desk-btn { border-color: #27ae60; } 
-        .desk-title { color: #1e8449; }
+        .hosp-btn {
+            border-color: #e67e22;
+        }
+
+        .hosp-title {
+            color: #d35400;
+        }
+
+        .desk-btn {
+            border-color: #27ae60;
+        }
+
+        .desk-title {
+            color: #1e8449;
+        }
 
         .bg-icon {
             position: absolute;
@@ -327,40 +514,47 @@
 
         /* ================= Mobile & Tablet Layout (Responsive) ================= */
         @media (max-width: 768px) {
-            body { 
-                padding: 0; 
-                background-color: white; 
+            body {
+                padding: 0;
+                background-color: white;
             }
 
-            .app-container { 
-                border-radius: 0; 
-                box-shadow: none; 
-                height: 100vh; 
-                height: 100dvh; /* Use dynamic viewport height if available */
-                display: flex; 
-                flex-direction: column; 
+            .app-container {
+                border-radius: 0;
+                box-shadow: none;
+                height: 100vh;
+                height: 100dvh;
+                /* Use dynamic viewport height if available */
+                display: flex;
+                flex-direction: column;
             }
 
-            .header { padding: 15px 10px; }
-            
+            .header {
+                padding: 15px 10px;
+            }
+
             .tabs {
                 position: sticky;
                 top: 0;
                 z-index: 100;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
 
-            .content-area { 
-                height: auto; 
-                flex: 1; 
-                display: flex !important; /* Override default hidden, manage visibility via active class on wrapper */
-                flex-direction: column; 
-                padding: 0; /* Remove padding to let image bleed to edge */
-                overflow-y: auto; 
-                background-color: #f4f6f9; 
+            .content-area {
+                height: auto;
+                flex: 1;
+                display: flex !important;
+                /* Override default hidden, manage visibility via active class on wrapper */
+                flex-direction: column;
+                padding: 0;
+                /* Remove padding to let image bleed to edge */
+                overflow-y: auto;
+                background-color: #f4f6f9;
             }
 
-            .content-area:not(.active) { display: none !important; }
+            .content-area:not(.active) {
+                display: none !important;
+            }
 
             .visual-canvas {
                 border-radius: 0;
@@ -368,56 +562,65 @@
                 display: flex;
                 flex-direction: column;
                 height: auto;
-                overflow: visible; /* Let lists flow naturally */
+                overflow: visible;
+                /* Let lists flow naturally */
             }
 
             /* The image area becomes a sticky header on mobile */
-            .base-wrapper { 
-                position: relative; /* Not sticky, scrolling feels more natural here */
-                height: 40vh; /* Fixed height for image area */
-                min-height: 250px; 
-                background: white; 
-                z-index: 10; 
+            .base-wrapper {
+                position: relative;
+                /* Not sticky, scrolling feels more natural here */
+                height: 40vh;
+                /* Fixed height for image area */
+                min-height: 250px;
+                background: white;
+                z-index: 10;
                 border-bottom: 1px solid #e0e0e0;
-                flex-shrink: 0; 
+                flex-shrink: 0;
                 width: 100%;
                 margin-bottom: 0;
             }
 
-            .base-image { 
-                height: 100%; 
+            .base-image {
+                height: 100%;
                 width: 100%;
                 object-fit: contain;
                 padding: 10px;
             }
 
             /* Disable interactive hotspots on mobile - too hard to tap */
-            .desktop-only { display: none; }
-            .canvas-bg-clickable { display: none; }
+            .desktop-only {
+                display: none;
+            }
+
+            .canvas-bg-clickable {
+                display: none;
+            }
 
             /* Transform popup menus into a vertical scrolling list */
-            .protocols-container { 
-                position: relative; 
-                display: flex; 
-                flex-direction: column; 
-                gap: 0; /* Remove gap, use borders */
-                pointer-events: auto; 
+            .protocols-container {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                /* Remove gap, use borders */
+                pointer-events: auto;
                 padding: 0;
                 height: auto;
                 background: #f4f6f9;
             }
 
-            .protocol-btn { 
-                position: relative; 
-                opacity: 1 !important; 
-                transform: scale(1) !important; 
-                width: 100%; 
+            .protocol-btn {
+                position: relative;
+                opacity: 1 !important;
+                transform: scale(1) !important;
+                width: 100%;
                 max-width: 100%;
-                top: auto !important; 
-                left: auto !important; 
-                right: auto !important; 
-                pointer-events: auto; 
-                display: flex !important; 
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                pointer-events: auto;
+                display: flex !important;
                 border-radius: 0;
                 border: none;
                 border-bottom: 1px solid #ddd;
@@ -438,16 +641,22 @@
                 border: 1px solid #eee;
                 border-left: 4px solid #3498db;
                 margin-bottom: 8px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             }
-            
-            .protocol-item:hover, .protocol-item:active {
+
+            .protocol-item:hover,
+            .protocol-item:active {
                 transform: none;
             }
 
             /* Mobile Specific Colors */
-            .hosp-btn .protocol-item { border-left-color: #e67e22; }
-            .desk-btn .protocol-item { border-left-color: #27ae60; }
+            .hosp-btn .protocol-item {
+                border-left-color: #e67e22;
+            }
+
+            .desk-btn .protocol-item {
+                border-left-color: #27ae60;
+            }
         }
     </style>
 </head>
@@ -472,7 +681,8 @@
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
 
                 <div class="base-wrapper">
-                    <img id="base-human" src="./Gemini_Generated_Image_xz9lsqxz9lsqxz9l.png" class="base-image active-img">
+                    <img id="base-human" src="./Gemini_Generated_Image_xz9lsqxz9lsqxz9l.png"
+                        class="base-image active-img">
                     <img id="img-nervous" src="./Nervous_system.png" class="base-image">
                     <img id="img-circulatory" src="./Circulatory_System.png" class="base-image">
                     <img id="img-respiratory" src="./Respiratory_system.png" class="base-image">
@@ -484,25 +694,22 @@
                     <img id="img-wound" src="./Wound care.png" class="base-image">
 
                     <div class="hotspots-overlay ratio-human desktop-only">
-                        <a class="hotspot hotspot-head"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-head" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab1', 'head', 'img-nervous')"
                             onmouseleave="leaveHoverRegion('tab1')"
                             onclick="lockRegion('tab1', 'head', 'img-nervous')"></a>
-                        <a class="hotspot hotspot-chest"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-chest" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab1', 'chest', 'img-circulatory')"
                             onmouseleave="leaveHoverRegion('tab1')"
                             onclick="lockRegion('tab1', 'chest', 'img-circulatory')"></a>
-                        <a class="hotspot hotspot-abdomen"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-abdomen" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab1', 'abdomen', 'img-digestive')"
                             onmouseleave="leaveHoverRegion('tab1')"
                             onclick="lockRegion('tab1', 'abdomen', 'img-digestive')"></a>
-                        <a class="hotspot hotspot-body"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-body" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab1', 'body', 'img-vital')"
-                            onmouseleave="leaveHoverRegion('tab1')" onclick="lockRegion('tab1', 'body', 'img-vital')"></a>
+                            onmouseleave="leaveHoverRegion('tab1')"
+                            onclick="lockRegion('tab1', 'body', 'img-vital')"></a>
                     </div>
                 </div>
 
@@ -580,35 +787,28 @@
                     <img id="img-hospice" src="./Hospice care.png" class="base-image">
 
                     <div class="hotspots-overlay ratio-hospital desktop-only">
-                        <a class="hotspot hotspot-opd"
-                            href="javascript:void(0);"
-                            onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
-                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'opd', 'img-opd')"></a>
-                        <a class="hotspot hotspot-er"
-                            href="javascript:void(0);"
-                            onmouseenter="hoverRegion('tab2', 'er', 'img-er')"
-                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'er', 'img-er')"></a>
-                        <a class="hotspot hotspot-or"
-                            href="javascript:void(0);"
-                            onmouseenter="hoverRegion('tab2', 'or', 'img-or')"
-                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'or', 'img-or')"></a>
-                        <a class="hotspot hotspot-pharmacy"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-opd" href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')" onmouseleave="leaveHoverRegion('tab2')"
+                            onclick="lockRegion('tab2', 'opd', 'img-opd')"></a>
+                        <a class="hotspot hotspot-er" href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'er', 'img-er')" onmouseleave="leaveHoverRegion('tab2')"
+                            onclick="lockRegion('tab2', 'er', 'img-er')"></a>
+                        <a class="hotspot hotspot-or" href="javascript:void(0);"
+                            onmouseenter="hoverRegion('tab2', 'or', 'img-or')" onmouseleave="leaveHoverRegion('tab2')"
+                            onclick="lockRegion('tab2', 'or', 'img-or')"></a>
+                        <a class="hotspot hotspot-pharmacy" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab2', 'pharmacy', 'img-pharmacy')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'pharmacy', 'img-pharmacy')"></a>
-                        <a class="hotspot hotspot-physio"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-physio" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab2', 'physio', 'img-physio')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'physio', 'img-physio')"></a>
-                        <a class="hotspot hotspot-hospice"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-hospice" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab2', 'hospice', 'img-hospice')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'hospice', 'img-hospice')"></a>
-                        <a class="hotspot hotspot-cancer"
-                            href="javascript:void(0);"
+                        <a class="hotspot hotspot-cancer" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab2', 'cancer', 'img-cancer')"
                             onmouseleave="leaveHoverRegion('tab2')"
                             onclick="lockRegion('tab2', 'cancer', 'img-cancer')"></a>
@@ -637,8 +837,8 @@
                             href="https://drive.google.com/drive/folders/1dRixMwUWKFF8ra9BO0UMXQF4ctlwPu5P?usp=drive_link"
                             target="_blank">004 手術護理</a>
                     </div>
-                    <div id="menu-tab2-pharmacy" class="protocol-btn hosp-btn pos-pharmacy" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
+                    <div id="menu-tab2-pharmacy" class="protocol-btn hosp-btn pos-pharmacy"
+                        onmouseenter="enterMenu('tab2')" onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🟩 藥物安全 (藥局)</div>
                         <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1JEUwKq4fzA9j4O-WjchVhgdWmDpIZ5k4?usp=drive_link"
@@ -651,8 +851,8 @@
                             href="https://drive.google.com/drive/folders/1vGjMz_JR3A7bEJkKX4u8QKQ-xA6hwRii?usp=drive_link"
                             target="_blank">019 放射、生理、檢驗、核醫</a>
                     </div>
-                    <div id="menu-tab2-hospice" class="protocol-btn hosp-btn pos-hospice" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
+                    <div id="menu-tab2-hospice" class="protocol-btn hosp-btn pos-hospice"
+                        onmouseenter="enterMenu('tab2')" onmouseleave="leaveMenu('tab2')">
                         <div class="protocol-title hosp-title">🌸 安寧療護</div>
                         <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1cp0v1T-RggkdamHnsSw658JSivPHyZsm?usp=drive_link"
@@ -682,11 +882,10 @@
                     <div class="hotspots-overlay ratio-hospital desktop-only">
                         <a class="hotspot hotspot-admin" href="javascript:void(0);"
                             onmouseenter="hoverRegion('tab3', 'admin', 'img-admin')"
-                            onmouseleave="leaveHoverRegion('tab3')" 
+                            onmouseleave="leaveHoverRegion('tab3')"
                             onclick="lockRegion('tab3', 'admin', 'img-admin')"></a>
                         <a class="hotspot hotspot-env" href="javascript:void(0);"
-                            onmouseenter="hoverRegion('tab3', 'env', 'img-env')"
-                            onmouseleave="leaveHoverRegion('tab3')" 
+                            onmouseenter="hoverRegion('tab3', 'env', 'img-env')" onmouseleave="leaveHoverRegion('tab3')"
                             onclick="lockRegion('tab3', 'env', 'img-env')"></a>
                     </div>
                 </div>
@@ -742,20 +941,20 @@
             if (state[tabId].isLocked) return;
 
             clearTimeout(hoverTimer);
-            hideAllMenus(tabId);
+            // hideAllMenus(tabId); // 取消這行，不要隱藏其他選單
 
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
 
             const menu = document.getElementById(`menu-${tabId}-${regionId}`);
-            if (menu) menu.classList.add('show');
+            // if (menu) menu.classList.add('show'); // 電腦版預設已顯示，不需要加 show
         }
 
         function leaveHoverRegion(tabId) {
             if (state[tabId].isLocked) return;
 
             hoverTimer = setTimeout(() => {
-                hideAllMenus(tabId);
+                // hideAllMenus(tabId); // 取消這行，不要隱藏其他選單
                 document.getElementById(state[tabId].baseImageId)?.classList.add('active-img');
             }, 150);
         }
@@ -771,10 +970,11 @@
         }
 
         function lockRegion(tabId, regionId, imageId) {
-            document.querySelectorAll(`#${tabId} .protocol-btn`).forEach(menu => {
-                menu.classList.remove('show');
-                menu.classList.remove('locked');
-            });
+            // 不要在 lock 的時候移除其他 menu，讓它們保持顯示
+            // document.querySelectorAll(`#${tabId} .protocol-btn`).forEach(menu => {
+            //     menu.classList.remove('show');
+            //     menu.classList.remove('locked');
+            // });
 
             state[tabId].isLocked = true;
             state[tabId].lockedRegion = regionId;
@@ -782,19 +982,19 @@
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
 
-            const menu = document.getElementById(`menu-${tabId}-${regionId}`);
-            if (menu) menu.classList.add('locked');
+            // const menu = document.getElementById(`menu-${tabId}-${regionId}`);
+            // if (menu) menu.classList.add('locked'); // 電腦版預設已顯示，不需要加 locked
         }
 
         function resetCanvas(tabId) {
             state[tabId].isLocked = false;
             state[tabId].lockedRegion = null;
 
-            hideAllMenus(tabId);
+            // hideAllMenus(tabId); // 取消隱藏
 
-            document.querySelectorAll(`#${tabId} .protocol-btn`).forEach(menu => {
-                menu.classList.remove('locked');
-            });
+            // document.querySelectorAll(`#${tabId} .protocol-btn`).forEach(menu => {
+            //     menu.classList.remove('locked');
+            // });
 
             document.getElementById(state[tabId].baseImageId)?.classList.add('active-img');
         }
@@ -805,12 +1005,8 @@
         }
 
         function hideAllMenus(tabId) {
-            document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
-            document.querySelectorAll(`#${tabId} .protocol-btn`).forEach(menu => {
-                if (!menu.classList.contains('locked')) {
-                    menu.classList.remove('show');
-                }
-            });
+            // 由於電腦版希望常駐顯示，此函數可以清空內容，或只在手機版有需要時才隱藏
+            // 在這裡我們直接讓它不做事，因為 CSS 已經控制了手機和電腦的顯示邏輯
         }
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -820,15 +1016,15 @@
                 // Check if it's already a LINE external browser link to avoid loops
                 if (!url.includes('openExternalBrowser=1')) {
                     e.preventDefault();
-                    
+
                     // The standard way LINE suggests to open in external browser
                     const separator = url.includes('?') ? '&' : '?';
                     const newUrl = url + separator + 'openExternalBrowser=1';
-                    
+
                     // Fallback mechanism: try opening in a new window/tab first
                     // Mobile browsers often handle target="_blank" by opening a new app or tab
                     window.open(newUrl, '_blank');
-                    
+
                     // Optional: If you want to force navigation in the current window as a fallback
                     // setTimeout(() => { window.location.href = newUrl; }, 100);
                 }
