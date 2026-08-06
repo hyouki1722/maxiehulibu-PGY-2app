@@ -528,10 +528,6 @@
                 transform: translate(-50%, -50%) scale(1.25);
             }
 
-            .canvas-bg-clickable {
-                display: none;
-            }
-
             /* 下方選單保留空間 */
             .protocols-container {
                 position: relative;
@@ -599,8 +595,9 @@
         <!-- ================= 頁籤一：人形圖 ================= -->
         <div id="tab1" class="content-area active">
             <div class="visual-canvas" id="canvas-tab1">
-                <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
                 <div class="base-wrapper">
+                    <!-- 將背景點擊層移入 base-wrapper，解決手機版無法點擊背景恢復的Bug -->
+                    <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
                     <img id="base-human" src="./Gemini_Generated_Image_xz9lsqxz9lsqxz9l.png"
                         class="base-image active-img">
                     <img id="img-nervous" src="./Nervous_system.png" class="base-image">
@@ -642,11 +639,14 @@
                     <div id="menu-tab1-chest" class="protocol-btn pos-chest" onmouseenter="enterMenu('tab1')"
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🫁 胸部 (心肺系統)</div>
+                        <!-- 加入 onmouseleave="restoreRegionImage('tab1')" 避免滑出後圖片停在最後一個項目 -->
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-circulatory')"
+                            onmouseleave="restoreRegionImage('tab1')"
                             ontouchstart="hoverItem('tab1', 'img-circulatory')"
                             href="https://drive.google.com/drive/folders/1E37ZeXwyxT4jpMZoeNtkM1Fh1fgbKSwz?usp=drive_link"
                             target="_blank">013 心臟血管系統護理</a>
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-respiratory')"
+                            onmouseleave="restoreRegionImage('tab1')"
                             ontouchstart="hoverItem('tab1', 'img-respiratory')"
                             href="https://drive.google.com/drive/folders/1JJtMeUILg1M1nRFslp1-cR5Dv0qutPmY?usp=drive_link"
                             target="_blank">014 呼吸系統</a>
@@ -655,11 +655,11 @@
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🩺 腹部 (消化與泌尿)</div>
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-digestive')"
-                            ontouchstart="hoverItem('tab1', 'img-digestive')"
+                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-digestive')"
                             href="https://drive.google.com/drive/folders/1NfBIMXB8LZme0O1S5afTLTAZEEm5T7h7?usp=drive_link"
                             target="_blank">012 消化道系統護理</a>
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-urinary')"
-                            ontouchstart="hoverItem('tab1', 'img-urinary')"
+                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-urinary')"
                             href="https://drive.google.com/drive/folders/1VIhzRwqwzf36dcTHrkgJAo6LJIuUDhke?usp=drive_link"
                             target="_blank">016 腎臟泌尿系統</a>
                     </div>
@@ -667,19 +667,19 @@
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🩸 全身性 (體徵與皮膚)</div>
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-vital')"
-                            ontouchstart="hoverItem('tab1', 'img-vital')"
+                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-vital')"
                             href="https://drive.google.com/drive/folders/1omd_6gZsQcPwunujpwxd84qgLnrx8e92?usp=drive_link"
                             target="_blank">001 生命徵象.疼痛.情緒困擾</a>
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-fluid')"
-                            ontouchstart="hoverItem('tab1', 'img-fluid')"
+                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-fluid')"
                             href="https://drive.google.com/drive/folders/1vSrsuosLLVV4ocY4h2b1eDl8C6BwYxB7?usp=drive_link"
                             target="_blank">002 體液供給</a>
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-comfort')"
-                            ontouchstart="hoverItem('tab1', 'img-comfort')"
+                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-comfort')"
                             href="https://drive.google.com/drive/folders/1ODrOuVaCIt0mE9BH7CGAmJtQ0pQFqk9T?usp=drive_link"
                             target="_blank">011 舒適需要</a>
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-wound')"
-                            ontouchstart="hoverItem('tab1', 'img-wound')"
+                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-wound')"
                             href="https://drive.google.com/drive/folders/1FQqTWZunZp0pbhMKfx-yrLtiZ0W5PZnR?usp=drive_link"
                             target="_blank">020 傷口照護</a>
                     </div>
@@ -690,8 +690,8 @@
         <!-- ================= 頁籤二：醫院圖 ================= -->
         <div id="tab2" class="content-area">
             <div class="visual-canvas" id="canvas-tab2">
-                <div class="canvas-bg-clickable" onclick="resetCanvas('tab2')"></div>
                 <div class="base-wrapper">
+                    <div class="canvas-bg-clickable" onclick="resetCanvas('tab2')"></div>
                     <img id="base-hospital" src="./hostipal.png" class="base-image active-img">
                     <img id="img-opd" src="./OPD.png" class="base-image">
                     <img id="img-er" src="./ER.png" class="base-image">
@@ -792,8 +792,8 @@
         <!-- ================= 頁籤三：桌面圖 ================= -->
         <div id="tab3" class="content-area">
             <div class="visual-canvas" id="canvas-tab3">
-                <div class="canvas-bg-clickable" onclick="resetCanvas('tab3')"></div>
                 <div class="base-wrapper">
+                    <div class="canvas-bg-clickable" onclick="resetCanvas('tab3')"></div>
                     <img id="base-desktop" src="./desktop.png" class="base-image active-img">
                     <img id="img-admin" src="./Nursing Administration.png" class="base-image">
                     <img id="img-env" src="./Environment & Infection Control.png" class="base-image">
@@ -838,10 +838,11 @@
     </div>
 
     <script>
+        // 修正：新增 lockedImageId 及 hoveredImageId，確保 UI 狀態同步
         const state = {
-            tab1: { isLocked: false, lockedRegion: null, baseImageId: 'base-human' },
-            tab2: { isLocked: false, lockedRegion: null, baseImageId: 'base-hospital' },
-            tab3: { isLocked: false, lockedRegion: null, baseImageId: 'base-desktop' }
+            tab1: { isLocked: false, lockedRegion: null, lockedImageId: null, hoveredImageId: null, baseImageId: 'base-human' },
+            tab2: { isLocked: false, lockedRegion: null, lockedImageId: null, hoveredImageId: null, baseImageId: 'base-hospital' },
+            tab3: { isLocked: false, lockedRegion: null, lockedImageId: null, hoveredImageId: null, baseImageId: 'base-desktop' }
         };
 
         let hoverTimer;
@@ -860,6 +861,8 @@
             clearTimeout(hoverTimer);
             hideAllMenus(tabId);
 
+            state[tabId].hoveredImageId = imageId; // 記錄目前被 hover 喚起的圖片
+
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
 
@@ -871,6 +874,7 @@
             if (state[tabId].isLocked || isMobile()) return;
             hoverTimer = setTimeout(() => {
                 hideAllMenus(tabId);
+                state[tabId].hoveredImageId = null;
                 document.getElementById(state[tabId].baseImageId)?.classList.add('active-img');
             }, 150);
         }
@@ -881,7 +885,12 @@
         }
 
         function leaveMenu(tabId) {
-            if (state[tabId].isLocked || isMobile()) return;
+            if (isMobile()) return;
+            if (state[tabId].isLocked) {
+                // 如果已經點擊鎖定了，離開選單範圍時應該切換回被鎖定的部位圖片
+                restoreRegionImage(tabId);
+                return;
+            }
             leaveHoverRegion(tabId);
         }
 
@@ -898,6 +907,7 @@
 
             state[tabId].isLocked = true;
             state[tabId].lockedRegion = regionId;
+            state[tabId].lockedImageId = imageId; // 記錄鎖定的圖片，用於還原
 
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
@@ -909,6 +919,8 @@
         function resetCanvas(tabId) {
             state[tabId].isLocked = false;
             state[tabId].lockedRegion = null;
+            state[tabId].lockedImageId = null;
+            state[tabId].hoveredImageId = null;
             hideAllMenus(tabId);
             document.querySelectorAll(`#${tabId} .protocol-btn`).forEach(menu => menu.classList.remove('locked'));
             document.getElementById(state[tabId].baseImageId)?.classList.add('active-img');
@@ -918,6 +930,24 @@
             if (isMobile()) return;
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
+        }
+
+        // 新增：處理還原該區域最初鎖定或 Hover 的圖片
+        function restoreRegionImage(tabId) {
+            if (isMobile()) return;
+            document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
+
+            if (state[tabId].isLocked) {
+                if (state[tabId].lockedImageId) {
+                    document.getElementById(state[tabId].lockedImageId)?.classList.add('active-img');
+                } else {
+                    document.getElementById(state[tabId].baseImageId)?.classList.add('active-img');
+                }
+            } else if (state[tabId].hoveredImageId) {
+                document.getElementById(state[tabId].hoveredImageId)?.classList.add('active-img');
+            } else {
+                document.getElementById(state[tabId].baseImageId)?.classList.add('active-img');
+            }
         }
 
         function hideAllMenus(tabId) {
