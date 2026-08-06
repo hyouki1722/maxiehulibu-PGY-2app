@@ -5,6 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>護理作業規範互動導覽系統 (圖形融合版)</title>
+
+    <script>
+        // 頁面載入時立即偵測 LINE 內建瀏覽器，若符合則自動重新導向至外部預設瀏覽器 (Safari/Chrome)
+        (function () {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isLine = (ua.includes("LINE") || ua.includes("Line"));
+            if (isLine && !window.location.search.includes("openExternalBrowser=1")) {
+                const currentUrl = window.location.href;
+                const separator = currentUrl.includes("?") ? "&" : "?";
+                window.location.replace(currentUrl + separator + "openExternalBrowser=1");
+            }
+        })();
+    </script>
+
     <style>
         :root {
             --app-max-width: 1100px;
@@ -160,16 +174,18 @@
             top: 2%;
             left: 35%;
             width: 30%;
-            height: 15%;
+            height: 12%;
         }
 
+        /* 縮短頭部熱區高度，切齊鎖骨上方 */
         .hotspot-chest {
-            top: 17%;
+            top: 15%;
             left: 25%;
             width: 50%;
-            height: 18%;
+            height: 20%;
         }
 
+        /* 胸部從鎖骨下方開始，與頭部留有1%的安全間距 */
         .hotspot-abdomen {
             top: 35%;
             left: 30%;
