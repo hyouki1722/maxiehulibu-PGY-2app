@@ -170,15 +170,15 @@
             width: auto;
         }
 
-        /* 修正：頭部與胸部以鎖骨為界，並留出安全間隙避免誤觸 */
+        /* 修正頭部：略微放大寬度與高度，確保不論如何縮放都能點到 */
         .hotspot-head {
-            top: 2%;
-            left: 35%;
-            width: 30%;
-            height: 16%;
+            top: 0%;
+            left: 30%;
+            width: 40%;
+            height: 18%;
         }
 
-        /* 鎖骨以上 */
+        /* 鎖骨以下，起點改為20% */
         .hotspot-chest {
             top: 20%;
             left: 25%;
@@ -186,7 +186,6 @@
             height: 16%;
         }
 
-        /* 鎖骨以下，起點改為20% */
         .hotspot-abdomen {
             top: 38%;
             left: 30%;
@@ -228,14 +227,6 @@
             left: 48%;
             width: 22%;
             height: 25%;
-            border-radius: 10px;
-        }
-
-        .hotspot-icu {
-            top: 35%;
-            left: 31%;
-            width: 15%;
-            height: 12%;
             border-radius: 10px;
         }
 
@@ -396,11 +387,6 @@
             left: 72%;
         }
 
-        .pos-icu {
-            top: 35%;
-            left: 48%;
-        }
-
         .pos-pharmacy {
             top: 70%;
             left: 10%;
@@ -459,7 +445,7 @@
             pointer-events: auto;
         }
 
-        /* ================= 手機/平板版 RWD 高度優化 ================= */
+        /* ================= 手機/平板版 RWD 高度與滾動優化 ================= */
         @media (max-width: 768px) {
             body {
                 padding: 0;
@@ -473,6 +459,13 @@
                 height: 100dvh;
                 display: flex;
                 flex-direction: column;
+                overflow: hidden;
+                /* 防止外層滾動，讓內部 content-area 獨立滾動 */
+            }
+
+            .header,
+            .tabs {
+                flex-shrink: 0;
             }
 
             .header {
@@ -480,12 +473,15 @@
             }
 
             .content-area {
-                height: auto;
+                height: 0;
+                /* Flexbox 滾動技巧 */
                 flex: 1;
                 display: flex !important;
                 flex-direction: column;
                 padding: 0;
                 background-color: #f4f6f9;
+                overflow-y: auto;
+                /* 確保內容過長時可以順暢滑動 */
             }
 
             .content-area:not(.active) {
@@ -497,15 +493,17 @@
                 box-shadow: none;
                 display: flex;
                 flex-direction: column;
-                overflow-y: auto;
                 height: auto;
+                min-height: 100%;
+                overflow: visible;
             }
 
-            /* 上方圖片區塊：放大佔用畫面比例 (50vh) */
+            /* 上方圖片區塊：改為黏性定位 (Sticky) 讓往下看選單時圖片不會跑掉 */
             .base-wrapper {
-                position: relative;
-                height: 50vh;
-                min-height: 320px;
+                position: sticky;
+                top: 0;
+                height: 45vh;
+                min-height: 280px;
                 background: white;
                 z-index: 10;
                 border-bottom: 1px solid #ddd;
@@ -518,23 +516,25 @@
                 padding: 5px;
             }
 
-            /* 針對手機版人形圖特別放大，剪裁掉不必要的灰底邊緣，讓人物更清楚 */
-            #canvas-tab1 .base-image {
-                transform: translate(-50%, -50%) scale(1.25);
-            }
-
-            /* 熱區也必須等比例放大才能精準對應身體部位 */
+            /* 針對手機版人形圖特別放大，中心點稍微下移 (-35%) 確保頭部熱區完全落在可視範圍內 */
+            #canvas-tab1 .base-image,
             #canvas-tab1 .hotspots-overlay {
-                transform: translate(-50%, -50%) scale(1.25);
+                transform: translate(-50%, -35%) scale(1.35);
             }
 
-            /* 下方選單保留空間 */
+            /* 移除點擊背景層 */
+            .canvas-bg-clickable {
+                display: none;
+            }
+
+            /* 下方選單空間：加上底部 padding 確保最後一個項目不會被切掉 */
             .protocols-container {
                 position: relative;
                 display: flex;
                 flex-direction: column;
                 pointer-events: auto;
                 padding: 15px;
+                padding-bottom: 50px;
             }
 
             .protocol-btn {
@@ -595,9 +595,8 @@
         <!-- ================= 頁籤一：人形圖 ================= -->
         <div id="tab1" class="content-area active">
             <div class="visual-canvas" id="canvas-tab1">
+                <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
                 <div class="base-wrapper">
-                    <!-- 將背景點擊層移入 base-wrapper，解決手機版無法點擊背景恢復的Bug -->
-                    <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
                     <img id="base-human" src="./Gemini_Generated_Image_xz9lsqxz9lsqxz9l.png"
                         class="base-image active-img">
                     <img id="img-nervous" src="./Nervous_system.png" class="base-image">
@@ -610,7 +609,7 @@
                     <img id="img-comfort" src="./Comfort needs.png" class="base-image">
                     <img id="img-wound" src="./Wound care.png" class="base-image">
 
-                    <div class="hotspots-overlay">
+                    <div class="hotspots-overlay ratio-human">
                         <div class="hotspot hotspot-head" onmouseenter="hoverRegion('tab1', 'head', 'img-nervous')"
                             onmouseleave="leaveHoverRegion('tab1')" onclick="lockRegion('tab1', 'head', 'img-nervous')">
                         </div>
@@ -639,7 +638,6 @@
                     <div id="menu-tab1-chest" class="protocol-btn pos-chest" onmouseenter="enterMenu('tab1')"
                         onmouseleave="leaveMenu('tab1')">
                         <div class="protocol-title">🫁 胸部 (心肺系統)</div>
-                        <!-- 加入 onmouseleave="restoreRegionImage('tab1')" 避免滑出後圖片停在最後一個項目 -->
                         <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-circulatory')"
                             onmouseleave="restoreRegionImage('tab1')"
                             ontouchstart="hoverItem('tab1', 'img-circulatory')"
@@ -696,13 +694,13 @@
                     <img id="img-opd" src="./OPD.png" class="base-image">
                     <img id="img-er" src="./ER.png" class="base-image">
                     <img id="img-or" src="./OR.png" class="base-image">
-                    <img id="img-icu" src="./hostipal2.png" class="base-image">
                     <img id="img-pharmacy" src="./Pharmacy.png" class="base-image">
                     <img id="img-physio" src="./RD-NM-Physio.png" class="base-image">
                     <img id="img-cancer" src="./Cancer Care.png" class="base-image">
                     <img id="img-hospice" src="./Hospice care.png" class="base-image">
 
-                    <div class="hotspots-overlay">
+                    <!-- 已移除 ICU 熱區 -->
+                    <div class="hotspots-overlay ratio-hospital">
                         <div class="hotspot hotspot-opd" onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
                             onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'opd', 'img-opd')">
                         </div>
@@ -710,9 +708,6 @@
                             onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'er', 'img-er')"></div>
                         <div class="hotspot hotspot-or" onmouseenter="hoverRegion('tab2', 'or', 'img-or')"
                             onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'or', 'img-or')"></div>
-                        <div class="hotspot hotspot-icu" onmouseenter="hoverRegion('tab2', 'icu', 'img-icu')"
-                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'icu', 'img-icu')">
-                        </div>
                         <div class="hotspot hotspot-pharmacy"
                             onmouseenter="hoverRegion('tab2', 'pharmacy', 'img-pharmacy')"
                             onmouseleave="leaveHoverRegion('tab2')"
@@ -730,6 +725,7 @@
                     </div>
                 </div>
 
+                <!-- 已移除 ICU 選單 -->
                 <div class="protocols-container" id="menus-tab2">
                     <div id="menu-tab2-opd" class="protocol-btn hosp-btn pos-opd" onmouseenter="enterMenu('tab2')"
                         onmouseleave="leaveMenu('tab2')">
@@ -751,11 +747,6 @@
                         <a class="protocol-item ext-link"
                             href="https://drive.google.com/drive/folders/1dRixMwUWKFF8ra9BO0UMXQF4ctlwPu5P?usp=drive_link"
                             target="_blank">004 手術護理</a>
-                    </div>
-                    <div id="menu-tab2-icu" class="protocol-btn hosp-btn pos-icu" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟨 重症區域 (ICU)</div>
-                        <a class="protocol-item ext-link" href="#" target="_blank">重症相關規範 (無提供代碼)</a>
                     </div>
                     <div id="menu-tab2-pharmacy" class="protocol-btn hosp-btn pos-pharmacy"
                         onmouseenter="enterMenu('tab2')" onmouseleave="leaveMenu('tab2')">
@@ -838,7 +829,6 @@
     </div>
 
     <script>
-        // 修正：新增 lockedImageId 及 hoveredImageId，確保 UI 狀態同步
         const state = {
             tab1: { isLocked: false, lockedRegion: null, lockedImageId: null, hoveredImageId: null, baseImageId: 'base-human' },
             tab2: { isLocked: false, lockedRegion: null, lockedImageId: null, hoveredImageId: null, baseImageId: 'base-hospital' },
@@ -861,7 +851,7 @@
             clearTimeout(hoverTimer);
             hideAllMenus(tabId);
 
-            state[tabId].hoveredImageId = imageId; // 記錄目前被 hover 喚起的圖片
+            state[tabId].hoveredImageId = imageId;
 
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
@@ -887,7 +877,6 @@
         function leaveMenu(tabId) {
             if (isMobile()) return;
             if (state[tabId].isLocked) {
-                // 如果已經點擊鎖定了，離開選單範圍時應該切換回被鎖定的部位圖片
                 restoreRegionImage(tabId);
                 return;
             }
@@ -907,7 +896,7 @@
 
             state[tabId].isLocked = true;
             state[tabId].lockedRegion = regionId;
-            state[tabId].lockedImageId = imageId; // 記錄鎖定的圖片，用於還原
+            state[tabId].lockedImageId = imageId;
 
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
@@ -932,7 +921,6 @@
             if (imageId) document.getElementById(imageId)?.classList.add('active-img');
         }
 
-        // 新增：處理還原該區域最初鎖定或 Hover 的圖片
         function restoreRegionImage(tabId) {
             if (isMobile()) return;
             document.querySelectorAll(`#${tabId} .base-image`).forEach(img => img.classList.remove('active-img'));
@@ -958,6 +946,22 @@
                 }
             });
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const openInExternalBrowser = function (e) {
+                let url = this.href;
+                if (!url.includes('openExternalBrowser=1') && url !== '#' && !url.startsWith('javascript')) {
+                    e.preventDefault();
+                    const separator = url.includes('?') ? '&' : '?';
+                    const newUrl = url + separator + 'openExternalBrowser=1';
+                    window.open(newUrl, '_blank');
+                }
+            };
+
+            document.querySelectorAll('a.ext-link').forEach(link => {
+                link.addEventListener('click', openInExternalBrowser);
+            });
+        });
     </script>
 </body>
 
