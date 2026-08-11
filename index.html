@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>護理作業規範互動導覽系統 (圖形融合版)</title>
 
-    <!-- LINE 環境自動跳轉腳本 (放在最上方確保第一時間執行) -->
+    <!-- LINE 環境自動跳轉腳本 -->
     <script>
         (function () {
             const isLine = navigator.userAgent.includes("Line") || navigator.userAgent.includes("LINE");
             const hasParam = window.location.search.includes("openExternalBrowser=1");
             if (isLine && !hasParam) {
-                // 使用 replace 避免產生無法返回的歷史紀錄迴圈
                 const newUrl = window.location.href + (window.location.href.includes('?') ? '&' : '?') + "openExternalBrowser=1";
                 window.location.replace(newUrl);
             }
@@ -97,6 +96,7 @@
 
         .content-area {
             position: relative;
+            /* 電腦版高度設定 */
             height: 700px;
             padding: 20px;
             display: none;
@@ -115,8 +115,13 @@
             background: #ffffff;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
             overflow: hidden;
+            /* 讓內容置中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
+        /* 重置用的背景層，直接鋪滿畫布 */
         .canvas-bg-clickable {
             position: absolute;
             top: 0;
@@ -127,41 +132,24 @@
             pointer-events: auto;
         }
 
-        /* 核心修復：改用 Flexbox 置中，確保不會互相干擾 */
-        .base-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* 核心包裝器：維持圖片與熱區的相對比例 */
+        .image-hotspot-wrapper {
+            position: relative;
             width: 100%;
             height: 100%;
-            z-index: 2;
-            pointer-events: none;
-            /* 外層容器不擋點擊 */
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
         }
 
-        /* 核心修復：廢棄寫死的 aspect-ratio，讓內容物自然撐開 */
-        .image-hotspot-wrapper {
-            position: relative;
+        /* 用來撐開容器高度的隱形圖片 (主要服務於RWD) */
+        .spacer-img {
             max-width: 100%;
             max-height: 100%;
-            display: inline-flex;
-        }
-
-        /* 核心修復：使用一張隱藏的圖片作為基準器，完美適配圖片原有比例 */
-        .spacer-img {
-            display: block;
-            max-width: 100%;
-            max-height: 640px;
-            /* 限制畫布內最大高度 */
-            width: auto;
-            height: auto;
             opacity: 0;
-            /* 完全隱形 */
             pointer-events: none;
+            display: block;
+            /* 確保佔據空間 */
         }
 
         .base-image {
@@ -171,12 +159,12 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            /* 保證不變形 */
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
             mix-blend-mode: multiply;
             filter: contrast(1.05);
             pointer-events: none;
-            /* 圖片自身不擋點擊，全交給熱區負責 */
         }
 
         .active-img {
@@ -184,6 +172,7 @@
             z-index: 2;
         }
 
+        /* 熱區覆蓋層：大小完全貼合 wrapper */
         .hotspots-overlay {
             position: absolute;
             top: 0;
@@ -192,18 +181,19 @@
             height: 100%;
             z-index: 5;
             pointer-events: auto;
-            /* 啟用熱區點擊與感應 */
         }
 
         .hotspot {
             position: absolute;
             cursor: pointer;
             border-radius: 40%;
-            /* border: 2px dashed rgba(255,0,0,0.4); /* 開發測試時可開啟此行查看熱區範圍 */
+            /* border: 2px dashed rgba(255,0,0,0.5); /* 測試用邊框 */
             z-index: 10;
         }
 
-        /* --- 人形圖熱區精準定位 (對應中間人物) --- */
+        /* ================= 熱區精準定位 ================= */
+
+        /* 人形圖 (需配合 body.png 置中的特性) */
         .hotspot-head {
             top: 25%;
             left: 42%;
@@ -232,7 +222,7 @@
             height: 18%;
         }
 
-        /* --- 醫院圖熱區定位 --- */
+        /* 醫院圖 */
         .hotspot-opd {
             top: 40%;
             left: 7%;
@@ -289,7 +279,7 @@
             border-radius: 10px;
         }
 
-        /* --- 桌面圖熱區定位 --- */
+        /* 桌面圖 */
         .hotspot-admin {
             top: 45%;
             left: 30%;
@@ -306,7 +296,7 @@
             border-radius: 10px;
         }
 
-        /* --- 彈出選單設定 --- */
+        /* ================= 彈出選單設定 ================= */
         .protocols-container {
             position: absolute;
             top: 0;
@@ -331,7 +321,7 @@
             opacity: 0;
             transform: scale(0.95);
             pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
 
         .protocol-btn.show,
@@ -339,6 +329,49 @@
             opacity: 1;
             transform: scale(1);
             pointer-events: auto;
+        }
+
+        .protocol-btn:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            border-color: #e74c3c;
+            z-index: 25;
+        }
+
+        /* 視覺引導線 (裝飾用的小圓點，模擬連接到身體部位) */
+        .protocol-btn::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #e74c3c;
+            z-index: -1;
+        }
+
+        /* 各部位引導點位置微調 */
+        .pos-head::before {
+            top: 50%;
+            left: -20px;
+            transform: translateY(-50%);
+        }
+
+        .pos-chest::before {
+            top: 50%;
+            right: -20px;
+            transform: translateY(-50%);
+        }
+
+        .pos-abdomen::before {
+            top: 50%;
+            left: -20px;
+            transform: translateY(-50%);
+        }
+
+        .pos-body::before {
+            top: 50%;
+            right: -20px;
+            transform: translateY(-50%);
         }
 
         .protocol-title {
@@ -373,7 +406,7 @@
             border-left: 3px solid #d35400;
         }
 
-        /* --- 電腦版：選單彈出位置 --- */
+        /* --- 電腦版選單位置 --- */
         .pos-head {
             top: 15%;
             left: calc(50% + 150px);
@@ -382,7 +415,6 @@
         .pos-chest {
             top: 35%;
             right: calc(50% + 150px);
-            left: auto;
         }
 
         .pos-abdomen {
@@ -393,7 +425,6 @@
         .pos-body {
             top: 70%;
             right: calc(50% + 150px);
-            left: auto;
         }
 
         .pos-opd {
@@ -439,12 +470,8 @@
             color: #d35400;
         }
 
-        .desk-btn {
-            border-color: #27ae60;
-        }
-
-        .desk-title {
-            color: #1e8449;
+        .hosp-btn::before {
+            display: none;
         }
 
         .pos-admin {
@@ -459,7 +486,19 @@
             width: 250px;
         }
 
-        /* ================= 手機/平板版 RWD 高度與滾動優化 ================= */
+        .desk-btn {
+            border-color: #27ae60;
+        }
+
+        .desk-title {
+            color: #1e8449;
+        }
+
+        .desk-btn::before {
+            display: none;
+        }
+
+        /* ================= 手機/平板版 RWD ================= */
         @media (max-width: 768px) {
             body {
                 padding: 0;
@@ -507,30 +546,33 @@
                 height: auto;
                 min-height: 100%;
                 overflow: visible;
+                background-color: white;
             }
 
-            /* 上方圖片區塊：改為黏性定位，自動適應 spacer-img 高度 */
-            .base-wrapper {
+            /* 手機版圖片區：改為 Sticky 定位，並由內容撐開高度 */
+            .image-hotspot-wrapper {
                 position: sticky;
                 top: 0;
-                height: auto;
                 background: white;
                 z-index: 10;
                 border-bottom: 1px solid #ddd;
                 flex-shrink: 0;
-                padding: 10px;
             }
 
             .spacer-img {
                 max-height: 45vh;
-                /* 手機版不佔據過多版面 */
+                /* 限制手機版圖片最大高度 */
+                width: auto;
+                height: auto;
             }
 
             .canvas-bg-clickable {
                 display: none;
             }
 
-            /* 下方選單空間：確保有留白可以滑到底 */
+            /* 手機不需要重置背景層 */
+
+            /* 下方選單空間 */
             .protocols-container {
                 position: relative;
                 display: flex;
@@ -554,6 +596,10 @@
                 border-radius: 8px;
                 border-width: 1px;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .protocol-btn::before {
+                display: none;
             }
 
             .protocol-btn.locked {
@@ -600,41 +646,35 @@
             <div class="visual-canvas" id="canvas-tab1">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
 
-                <div class="base-wrapper">
-                    <!-- 使用 spacer-img 自動撐開符合圖片實際比例的容器 -->
-                    <div class="image-hotspot-wrapper">
-                        <!-- 這是一張隱形的圖，專門用來計算實際寬高 -->
-                        <img src="./body.png" class="spacer-img">
+                <div class="image-hotspot-wrapper">
+                    <!-- 使用 spacer-img 自動撐開容器 -->
+                    <img src="./body.png" class="spacer-img">
 
-                        <!-- 以下是實際顯示的圖 -->
-                        <img id="base-human" src="./body.png" class="base-image active-img">
-                        <img id="img-nervous" src="./Nervous_system.png" class="base-image">
-                        <img id="img-circulatory" src="./Circulatory_System.png" class="base-image">
-                        <img id="img-respiratory" src="./Respiratory_system.png" class="base-image">
-                        <img id="img-digestive" src="./digestive system.png" class="base-image">
-                        <img id="img-urinary" src="./Urinary_system.png" class="base-image">
-                        <img id="img-vital" src="./vital sing.png" class="base-image">
-                        <img id="img-fluid" src="./Fluid supply.png" class="base-image">
-                        <img id="img-comfort" src="./Comfort needs.png" class="base-image">
-                        <img id="img-wound" src="./wound care.png" class="base-image">
+                    <img id="base-human" src="./body.png" class="base-image active-img">
+                    <img id="img-nervous" src="./Nervous_system.png" class="base-image">
+                    <img id="img-circulatory" src="./Circulatory_System.png" class="base-image">
+                    <img id="img-respiratory" src="./Respiratory_system.png" class="base-image">
+                    <img id="img-digestive" src="./digestive system.png" class="base-image">
+                    <img id="img-urinary" src="./Urinary_system.png" class="base-image">
+                    <img id="img-vital" src="./vital sing.png" class="base-image">
+                    <img id="img-fluid" src="./Fluid supply.png" class="base-image">
+                    <img id="img-comfort" src="./Comfort needs.png" class="base-image">
+                    <img id="img-wound" src="./wound care.png" class="base-image">
 
-                        <div class="hotspots-overlay">
-                            <div class="hotspot hotspot-head" onmouseenter="hoverRegion('tab1', 'head', 'img-nervous')"
-                                onmouseleave="leaveHoverRegion('tab1')"
-                                onclick="lockRegion('tab1', 'head', 'img-nervous')">
-                            </div>
-                            <div class="hotspot hotspot-chest"
-                                onmouseenter="hoverRegion('tab1', 'chest', 'img-circulatory')"
-                                onmouseleave="leaveHoverRegion('tab1')"
-                                onclick="lockRegion('tab1', 'chest', 'img-circulatory')"></div>
-                            <div class="hotspot hotspot-abdomen"
-                                onmouseenter="hoverRegion('tab1', 'abdomen', 'img-digestive')"
-                                onmouseleave="leaveHoverRegion('tab1')"
-                                onclick="lockRegion('tab1', 'abdomen', 'img-digestive')"></div>
-                            <div class="hotspot hotspot-body" onmouseenter="hoverRegion('tab1', 'body', 'img-vital')"
-                                onmouseleave="leaveHoverRegion('tab1')"
-                                onclick="lockRegion('tab1', 'body', 'img-vital')">
-                            </div>
+                    <div class="hotspots-overlay">
+                        <div class="hotspot hotspot-head" onmouseenter="hoverRegion('tab1', 'head', 'img-nervous')"
+                            onmouseleave="leaveHoverRegion('tab1')" onclick="lockRegion('tab1', 'head', 'img-nervous')">
+                        </div>
+                        <div class="hotspot hotspot-chest"
+                            onmouseenter="hoverRegion('tab1', 'chest', 'img-circulatory')"
+                            onmouseleave="leaveHoverRegion('tab1')"
+                            onclick="lockRegion('tab1', 'chest', 'img-circulatory')"></div>
+                        <div class="hotspot hotspot-abdomen"
+                            onmouseenter="hoverRegion('tab1', 'abdomen', 'img-digestive')"
+                            onmouseleave="leaveHoverRegion('tab1')"
+                            onclick="lockRegion('tab1', 'abdomen', 'img-digestive')"></div>
+                        <div class="hotspot hotspot-body" onmouseenter="hoverRegion('tab1', 'body', 'img-vital')"
+                            onmouseleave="leaveHoverRegion('tab1')" onclick="lockRegion('tab1', 'body', 'img-vital')">
                         </div>
                     </div>
                 </div>
@@ -701,47 +741,41 @@
         <div id="tab2" class="content-area">
             <div class="visual-canvas" id="canvas-tab2">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab2')"></div>
-                <div class="base-wrapper">
-                    <div class="image-hotspot-wrapper">
-                        <!-- 用於對齊的基準圖片 -->
-                        <img src="./hostipal.png" class="spacer-img">
+                <div class="image-hotspot-wrapper">
+                    <!-- 基準圖片 -->
+                    <img src="./hostipal.png" class="spacer-img">
 
-                        <img id="base-hospital" src="./hostipal.png" class="base-image active-img">
-                        <img id="img-opd" src="./OPD.png" class="base-image">
-                        <img id="img-er" src="./ER.png" class="base-image">
-                        <img id="img-or" src="./OR.png" class="base-image">
-                        <img id="img-pharmacy" src="./Pharmacy.png" class="base-image">
-                        <img id="img-physio" src="./RD-NM-Physio.png" class="base-image">
-                        <img id="img-cancer" src="./Cancer Care.png" class="base-image">
-                        <img id="img-hospice" src="./Hospice care.png" class="base-image">
+                    <img id="base-hospital" src="./hostipal.png" class="base-image active-img">
+                    <img id="img-opd" src="./OPD.png" class="base-image">
+                    <img id="img-er" src="./ER.png" class="base-image">
+                    <img id="img-or" src="./OR.png" class="base-image">
+                    <img id="img-pharmacy" src="./Pharmacy.png" class="base-image">
+                    <img id="img-physio" src="./RD-NM-Physio.png" class="base-image">
+                    <img id="img-cancer" src="./Cancer Care.png" class="base-image">
+                    <img id="img-hospice" src="./Hospice care.png" class="base-image">
 
-                        <div class="hotspots-overlay">
-                            <div class="hotspot hotspot-opd" onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
-                                onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'opd', 'img-opd')">
-                            </div>
-                            <div class="hotspot hotspot-er" onmouseenter="hoverRegion('tab2', 'er', 'img-er')"
-                                onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'er', 'img-er')">
-                            </div>
-                            <div class="hotspot hotspot-or" onmouseenter="hoverRegion('tab2', 'or', 'img-or')"
-                                onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'or', 'img-or')">
-                            </div>
-                            <div class="hotspot hotspot-pharmacy"
-                                onmouseenter="hoverRegion('tab2', 'pharmacy', 'img-pharmacy')"
-                                onmouseleave="leaveHoverRegion('tab2')"
-                                onclick="lockRegion('tab2', 'pharmacy', 'img-pharmacy')"></div>
-                            <div class="hotspot hotspot-physio"
-                                onmouseenter="hoverRegion('tab2', 'physio', 'img-physio')"
-                                onmouseleave="leaveHoverRegion('tab2')"
-                                onclick="lockRegion('tab2', 'physio', 'img-physio')"></div>
-                            <div class="hotspot hotspot-hospice"
-                                onmouseenter="hoverRegion('tab2', 'hospice', 'img-hospice')"
-                                onmouseleave="leaveHoverRegion('tab2')"
-                                onclick="lockRegion('tab2', 'hospice', 'img-hospice')"></div>
-                            <div class="hotspot hotspot-cancer"
-                                onmouseenter="hoverRegion('tab2', 'cancer', 'img-cancer')"
-                                onmouseleave="leaveHoverRegion('tab2')"
-                                onclick="lockRegion('tab2', 'cancer', 'img-cancer')"></div>
+                    <div class="hotspots-overlay">
+                        <div class="hotspot hotspot-opd" onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
+                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'opd', 'img-opd')">
                         </div>
+                        <div class="hotspot hotspot-er" onmouseenter="hoverRegion('tab2', 'er', 'img-er')"
+                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'er', 'img-er')"></div>
+                        <div class="hotspot hotspot-or" onmouseenter="hoverRegion('tab2', 'or', 'img-or')"
+                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'or', 'img-or')"></div>
+                        <div class="hotspot hotspot-pharmacy"
+                            onmouseenter="hoverRegion('tab2', 'pharmacy', 'img-pharmacy')"
+                            onmouseleave="leaveHoverRegion('tab2')"
+                            onclick="lockRegion('tab2', 'pharmacy', 'img-pharmacy')"></div>
+                        <div class="hotspot hotspot-physio" onmouseenter="hoverRegion('tab2', 'physio', 'img-physio')"
+                            onmouseleave="leaveHoverRegion('tab2')"
+                            onclick="lockRegion('tab2', 'physio', 'img-physio')"></div>
+                        <div class="hotspot hotspot-hospice"
+                            onmouseenter="hoverRegion('tab2', 'hospice', 'img-hospice')"
+                            onmouseleave="leaveHoverRegion('tab2')"
+                            onclick="lockRegion('tab2', 'hospice', 'img-hospice')"></div>
+                        <div class="hotspot hotspot-cancer" onmouseenter="hoverRegion('tab2', 'cancer', 'img-cancer')"
+                            onmouseleave="leaveHoverRegion('tab2')"
+                            onclick="lockRegion('tab2', 'cancer', 'img-cancer')"></div>
                     </div>
                 </div>
 
@@ -799,27 +833,24 @@
             </div>
         </div>
 
-        <!-- ================= 頁籤三：桌面圖 ================= -->
+        <!-- ================= 頁籤三：行政庶務圖 ================= -->
         <div id="tab3" class="content-area">
             <div class="visual-canvas" id="canvas-tab3">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab3')"></div>
-                <div class="base-wrapper">
-                    <div class="image-hotspot-wrapper">
-                        <!-- 用於對齊的基準圖片 -->
-                        <img src="./desktop.png" class="spacer-img">
+                <div class="image-hotspot-wrapper">
+                    <!-- 基準圖片 -->
+                    <img src="./desktop.png" class="spacer-img">
 
-                        <img id="base-desktop" src="./desktop.png" class="base-image active-img">
-                        <img id="img-admin" src="./Nursing Administration.png" class="base-image">
-                        <img id="img-env" src="./Environment & Infection Control.png" class="base-image">
+                    <img id="base-desktop" src="./desktop.png" class="base-image active-img">
+                    <img id="img-admin" src="./Nursing Administration.png" class="base-image">
+                    <img id="img-env" src="./Environment & Infection Control.png" class="base-image">
 
-                        <div class="hotspots-overlay">
-                            <div class="hotspot hotspot-admin" onmouseenter="hoverRegion('tab3', 'admin', 'img-admin')"
-                                onmouseleave="leaveHoverRegion('tab3')"
-                                onclick="lockRegion('tab3', 'admin', 'img-admin')">
-                            </div>
-                            <div class="hotspot hotspot-env" onmouseenter="hoverRegion('tab3', 'env', 'img-env')"
-                                onmouseleave="leaveHoverRegion('tab3')" onclick="lockRegion('tab3', 'env', 'img-env')">
-                            </div>
+                    <div class="hotspots-overlay">
+                        <div class="hotspot hotspot-admin" onmouseenter="hoverRegion('tab3', 'admin', 'img-admin')"
+                            onmouseleave="leaveHoverRegion('tab3')" onclick="lockRegion('tab3', 'admin', 'img-admin')">
+                        </div>
+                        <div class="hotspot hotspot-env" onmouseenter="hoverRegion('tab3', 'env', 'img-env')"
+                            onmouseleave="leaveHoverRegion('tab3')" onclick="lockRegion('tab3', 'env', 'img-env')">
                         </div>
                     </div>
                 </div>
