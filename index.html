@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>護理作業規範互動導覽系統 (圖形融合版)</title>
 
+    <!-- ====== 新增：引入 PWA Manifest ====== -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="apple-touch-icon" href="./icon-192x192.png"> <!-- 給 iOS Safari 的圖示 -->
+    <!-- ======================================= -->
+
     <!-- LINE 環境自動跳轉腳本 (放在最上方確保第一時間執行) -->
     <script>
         (function () {
@@ -1024,6 +1030,17 @@
                 link.addEventListener('click', openInExternalBrowser);
             });
         });
+
+        // ====== 新增：註冊 Service Worker ======
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js').then(function(registration) {
+                    console.log('ServiceWorker 註冊成功，範圍為: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker 註冊失敗: ', err);
+                });
+            });
+        }
     </script>
 </body>
 
