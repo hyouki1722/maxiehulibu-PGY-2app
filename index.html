@@ -6,15 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>護理作業規範互動導覽系統 (圖形融合版)</title>
 
-
-
-    <!-- LINE 環境自動跳轉腳本 (放在最上方確保第一時間執行) -->
+    <!-- LINE 環境自動跳轉腳本 -->
     <script>
         (function () {
             const isLine = navigator.userAgent.includes("Line") || navigator.userAgent.includes("LINE");
             const hasParam = window.location.search.includes("openExternalBrowser=1");
             if (isLine && !hasParam) {
-                // 使用 replace 避免產生無法返回的歷史紀錄迴圈
                 const newUrl = window.location.href + (window.location.href.includes('?') ? '&' : '?') + "openExternalBrowser=1";
                 window.location.replace(newUrl);
             }
@@ -119,6 +116,7 @@
             overflow: hidden;
         }
 
+        /* 點擊空白處重置用的隱形層 */
         .canvas-bg-clickable {
             position: absolute;
             top: 0;
@@ -129,38 +127,26 @@
             pointer-events: auto;
         }
 
-        /* 核心修復：改用 Flexbox 置中，確保不會互相干擾 */
-        .base-wrapper {
+        /* 核心包裝器：電腦版撐滿，手機版維持比例 */
+        .image-hotspot-wrapper {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             height: 100%;
-            z-index: 2;
+            width: 100%;
             pointer-events: none;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
         }
 
-        /* 核心修復：廢棄寫死的 aspect-ratio，讓內容物自然撐開 */
-        .image-hotspot-wrapper {
+        /* 內部容器 */
+        .ratio-container {
             position: relative;
-            max-width: 100%;
-            max-height: 100%;
-            display: inline-flex;
-        }
-
-        /* 核心修復：使用一張隱藏的圖片作為基準器，完美適配圖片原有比例 */
-        .spacer-img {
-            display: block;
-            max-width: 100%;
-            max-height: 640px;
-            width: auto;
-            height: auto;
-            opacity: 0;
-            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            pointer-events: auto;
         }
 
         .base-image {
@@ -189,46 +175,50 @@
             width: 100%;
             height: 100%;
             z-index: 5;
-            pointer-events: auto;
+            pointer-events: none;
         }
 
         .hotspot {
             position: absolute;
             cursor: pointer;
             border-radius: 40%;
+            /* border: 2px dashed rgba(255,0,0,0.5); /* 測試用邊框 */
             z-index: 10;
+            pointer-events: auto;
         }
 
-        /* --- 人形圖熱區精準定位 (對應中間人物) --- */
+        /* ================= 電腦版熱區精準定位 ================= */
+
+        /* 人形圖 */
         .hotspot-head {
-            top: 25%;
-            left: 42%;
-            width: 16%;
-            height: 20%;
+            top: 12%;
+            left: 32%;
+            width: 35%;
+            height: 23%;
         }
 
         .hotspot-chest {
-            top: 45%;
-            left: 40%;
-            width: 20%;
-            height: 12%;
+            top: 38%;
+            left: 28%;
+            width: 44%;
+            height: 16%;
         }
 
         .hotspot-abdomen {
-            top: 57%;
-            left: 42%;
-            width: 16%;
-            height: 12%;
+            top: 56%;
+            left: 32%;
+            width: 36%;
+            height: 15%;
         }
 
         .hotspot-body {
-            top: 69%;
-            left: 38%;
-            width: 24%;
-            height: 18%;
+            top: 75%;
+            left: 35%;
+            width: 30%;
+            height: 20%;
         }
 
-        /* --- 醫院圖熱區定位 --- */
+        /* 醫院圖 */
         .hotspot-opd {
             top: 40%;
             left: 7%;
@@ -285,7 +275,7 @@
             border-radius: 10px;
         }
 
-        /* --- 桌面圖熱區定位 --- */
+        /* 行政庶務圖 */
         .hotspot-admin {
             top: 45%;
             left: 30%;
@@ -302,7 +292,7 @@
             border-radius: 10px;
         }
 
-        /* --- 彈出選單設定 --- */
+        /* ================= 彈出選單設定 ================= */
         .protocols-container {
             position: absolute;
             top: 0;
@@ -343,7 +333,6 @@
             z-index: 25;
         }
 
-        /* 視覺引導線 */
         .protocol-btn::before {
             content: '';
             position: absolute;
@@ -355,7 +344,6 @@
             z-index: -1;
         }
 
-        /* 各部位引導點位置微調 */
         .pos-head::before {
             top: 50%;
             left: -20px;
@@ -412,7 +400,7 @@
             border-left: 3px solid #d35400;
         }
 
-        /* --- 電腦版：選單彈出位置 --- */
+        /* --- 電腦版選單位置 --- */
         .pos-head {
             top: 15%;
             left: calc(50% + 150px);
@@ -429,9 +417,8 @@
             left: calc(50% + 150px);
         }
 
-        /* 修正跑版：全身選單往上拉，避免在電腦版被底部截斷 */
         .pos-body {
-            top: 45%;
+            top: 70%;
             right: calc(50% + 150px);
             left: auto;
         }
@@ -507,7 +494,8 @@
             display: none;
         }
 
-        /* ================= 手機/平板版 RWD 高度與滾動優化 ================= */
+
+        /* ================= 手機/平板版 RWD ================= */
         @media (max-width: 768px) {
             body {
                 padding: 0;
@@ -557,27 +545,50 @@
                 overflow: visible;
             }
 
-            .base-wrapper {
+            /* 上方圖片區塊 Sticky */
+            .image-hotspot-wrapper {
                 position: sticky;
                 top: 0;
-                height: auto;
+                height: 45vh;
+                min-height: 280px;
                 background: white;
                 z-index: 10;
                 border-bottom: 1px solid #ddd;
                 flex-shrink: 0;
-                padding: 10px;
+                transform: none;
+                left: 0;
             }
 
-            .spacer-img {
-                max-height: 45vh;
+            /* 手機版：啟用固定比例，確保熱區不隨畫面長寬比亂跑 */
+            .tab1-ratio {
+                max-width: 100%;
+                max-height: 100%;
+                aspect-ratio: 4 / 5;
+                height: 100%;
                 width: auto;
+            }
+
+            .tab2-ratio,
+            .tab3-ratio {
+                max-width: 100%;
+                max-height: 100%;
+                aspect-ratio: 16 / 9;
+                width: 100%;
                 height: auto;
+            }
+
+            .base-image {
+                height: 100%;
+                max-width: 100%;
+                padding: 5px;
+                object-fit: contain;
             }
 
             .canvas-bg-clickable {
                 display: none;
             }
 
+            /* 選單列表 */
             .protocols-container {
                 position: relative;
                 display: flex;
@@ -601,6 +612,10 @@
                 border-radius: 8px;
                 border-width: 1px;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .protocol-btn::before {
+                display: none;
             }
 
             .protocol-btn.locked {
@@ -647,10 +662,11 @@
             <div class="visual-canvas" id="canvas-tab1">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
 
-                <div class="base-wrapper">
-                    <div class="image-hotspot-wrapper">
-                        <img src="./body.png" class="spacer-img">
-                        <img id="base-human" src="./body.png" class="base-image active-img">
+                <div class="image-hotspot-wrapper">
+                    <div class="ratio-container tab1-ratio">
+                        <!-- 所有圖片檔名皆已替換底線，消除空白 -->
+                        <img id="base-human" src="./body.png" class="base-image active-img"
+                            onerror="console.log('Error loading body.png')">
                         <img id="img-nervous" src="./Nervous_system.png" class="base-image">
                         <img id="img-circulatory" src="./Circulatory_System.png" class="base-image">
                         <img id="img-respiratory" src="./Respiratory_system.png" class="base-image">
@@ -744,9 +760,9 @@
         <div id="tab2" class="content-area">
             <div class="visual-canvas" id="canvas-tab2">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab2')"></div>
-                <div class="base-wrapper">
-                    <div class="image-hotspot-wrapper">
-                        <img src="./hostipal.png" class="spacer-img">
+                <div class="image-hotspot-wrapper">
+                    <div class="ratio-container tab2-ratio">
+                        <!-- 所有圖片檔名皆已替換底線，消除空白 -->
                         <img id="base-hospital" src="./hostipal.png" class="base-image active-img">
                         <img id="img-opd" src="./OPD.png" class="base-image">
                         <img id="img-er" src="./ER.png" class="base-image">
@@ -754,7 +770,7 @@
                         <img id="img-pharmacy" src="./Pharmacy.png" class="base-image">
                         <img id="img-physio" src="./RD-NM-Physio.png" class="base-image">
                         <img id="img-cancer" src="./Cancer_Care.png" class="base-image">
-                        <img id="img-hospice" src="./Hospice_Care.png" class="base-image">
+                        <img id="img-hospice" src="./Hospice_care.png" class="base-image">
 
                         <div class="hotspots-overlay">
                             <div class="hotspot hotspot-opd" onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
@@ -844,12 +860,12 @@
         <div id="tab3" class="content-area">
             <div class="visual-canvas" id="canvas-tab3">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab3')"></div>
-                <div class="base-wrapper">
-                    <div class="image-hotspot-wrapper">
-                        <img src="./desktop.png" class="spacer-img">
+                <div class="image-hotspot-wrapper">
+                    <div class="ratio-container tab3-ratio">
+                        <!-- 所有圖片檔名皆已替換底線，消除空白與符號 -->
                         <img id="base-desktop" src="./desktop.png" class="base-image active-img">
                         <img id="img-admin" src="./Nursing_Administration.png" class="base-image">
-                        <img id="img-env" src="./Environment&Infection_Control.png" class="base-image">
+                        <img id="img-env" src="./Environment_Infection_Control.png" class="base-image">
 
                         <div class="hotspots-overlay">
                             <div class="hotspot hotspot-admin" onmouseenter="hoverRegion('tab3', 'admin', 'img-admin')"
@@ -1026,7 +1042,6 @@
                 link.addEventListener('click', openInExternalBrowser);
             });
         });
-
     </script>
 </body>
 
