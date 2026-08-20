@@ -640,243 +640,250 @@
         </div>
 
         <!-- ================= 頁籤一：人形圖 ================= -->
+        <!-- 圖片 / 熱區 / 選單內容已改為由 TAB_DATA 資料表於 renderTab() 動態產生，
+             不再手動維護重複的 HTML；如需新增/修改規範，只需編輯下方 <script> 內的 TAB1_DATA -->
         <div id="tab1" class="content-area active">
             <div class="visual-canvas" id="canvas-tab1">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab1')"></div>
 
                 <!-- 統一使用 16:9 的比例容器 -->
-                <div class="ratio-container">
-                    <!-- 底圖與所有亮起圖 -->
-                    <img id="base-human" src="./body.png" class="base-image active-img"
-                        onerror="console.log('body.png 載入失敗');">
-                    <img id="img-nervous" src="./Nervous_system.png" class="base-image">
-                    <img id="img-circulatory" src="./Circulatory_System.png" class="base-image">
-                    <img id="img-respiratory" src="./Respiratory_system.png" class="base-image">
-                    <img id="img-digestive" src="./digestive_system.png" class="base-image">
-                    <img id="img-urinary" src="./Urinary_system.png" class="base-image">
-                    <img id="img-vital" src="./vital_sing.png" class="base-image">
-                    <img id="img-fluid" src="./Fluid_supply.png" class="base-image">
-                    <img id="img-comfort" src="./Comfort_needs.png" class="base-image">
-                    <img id="img-wound" src="./wound_care.png" class="base-image">
-
-                    <div class="hotspots-overlay">
-                        <div class="hotspot hotspot-head" onmouseenter="hoverRegion('tab1', 'head', 'img-nervous')"
-                            onmouseleave="leaveHoverRegion('tab1')" onclick="lockRegion('tab1', 'head', 'img-nervous')">
-                        </div>
-                        <div class="hotspot hotspot-chest"
-                            onmouseenter="hoverRegion('tab1', 'chest', 'img-circulatory')"
-                            onmouseleave="leaveHoverRegion('tab1')"
-                            onclick="lockRegion('tab1', 'chest', 'img-circulatory')"></div>
-                        <div class="hotspot hotspot-abdomen"
-                            onmouseenter="hoverRegion('tab1', 'abdomen', 'img-digestive')"
-                            onmouseleave="leaveHoverRegion('tab1')"
-                            onclick="lockRegion('tab1', 'abdomen', 'img-digestive')"></div>
-                        <div class="hotspot hotspot-body" onmouseenter="hoverRegion('tab1', 'body', 'img-vital')"
-                            onmouseleave="leaveHoverRegion('tab1')" onclick="lockRegion('tab1', 'body', 'img-vital')">
-                        </div>
+                <div class="ratio-container" id="ratio-tab1">
+                    <!-- 底圖與所有亮起圖：由 renderTab() 動態插入 -->
+                    <div class="hotspots-overlay" id="hotspots-tab1">
+                        <!-- 熱區：由 renderTab() 動態插入 -->
                     </div>
                 </div>
 
                 <div class="protocols-container" id="menus-tab1">
-                    <div id="menu-tab1-head" class="protocol-btn pos-head" onmouseenter="enterMenu('tab1')"
-                        onmouseleave="leaveMenu('tab1')">
-                        <div class="protocol-title">🧠 頭部 (神經系統)</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/12VOsJeTQ-9hwwenurnduTRP0vrgo_xx7?usp=drive_link"
-                            target="_blank">015 神經感覺系統</a>
-                    </div>
-                    <div id="menu-tab1-chest" class="protocol-btn pos-chest" onmouseenter="enterMenu('tab1')"
-                        onmouseleave="leaveMenu('tab1')">
-                        <div class="protocol-title">🫁 胸部 (心肺系統)</div>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-circulatory')"
-                            onmouseleave="restoreRegionImage('tab1')"
-                            ontouchstart="hoverItem('tab1', 'img-circulatory')"
-                            href="https://drive.google.com/drive/folders/1E37ZeXwyxT4jpMZoeNtkM1Fh1fgbKSwz?usp=drive_link"
-                            target="_blank">013 心臟血管系統護理</a>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-respiratory')"
-                            onmouseleave="restoreRegionImage('tab1')"
-                            ontouchstart="hoverItem('tab1', 'img-respiratory')"
-                            href="https://drive.google.com/drive/folders/1JJtMeUILg1M1nRFslp1-cR5Dv0qutPmY?usp=drive_link"
-                            target="_blank">014 呼吸系統</a>
-                    </div>
-                    <div id="menu-tab1-abdomen" class="protocol-btn pos-abdomen" onmouseenter="enterMenu('tab1')"
-                        onmouseleave="leaveMenu('tab1')">
-                        <div class="protocol-title">🩺 腹部 (消化與泌尿)</div>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-digestive')"
-                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-digestive')"
-                            href="https://drive.google.com/drive/folders/1NfBIMXB8LZme0O1S5afTLTAZEEm5T7h7?usp=drive_link"
-                            target="_blank">012 消化道系統護理</a>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-urinary')"
-                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-urinary')"
-                            href="https://drive.google.com/drive/folders/1VIhzRwqwzf36dcTHrkgJAo6LJIuUDhke?usp=drive_link"
-                            target="_blank">016 腎臟泌尿系統</a>
-                    </div>
-                    <div id="menu-tab1-body" class="protocol-btn pos-body" onmouseenter="enterMenu('tab1')"
-                        onmouseleave="leaveMenu('tab1')">
-                        <div class="protocol-title">🩸 全身性 (體徵與皮膚)</div>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-vital')"
-                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-vital')"
-                            href="https://drive.google.com/drive/folders/1omd_6gZsQcPwunujpwxd84qgLnrx8e92?usp=drive_link"
-                            target="_blank">001 生命徵象.疼痛.情緒困擾</a>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-fluid')"
-                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-fluid')"
-                            href="https://drive.google.com/drive/folders/1vSrsuosLLVV4ocY4h2b1eDl8C6BwYxB7?usp=drive_link"
-                            target="_blank">002 體液供給</a>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-comfort')"
-                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-comfort')"
-                            href="https://drive.google.com/drive/folders/1ODrOuVaCIt0mE9BH7CGAmJtQ0pQFqk9T?usp=drive_link"
-                            target="_blank">011 舒適需要</a>
-                        <a class="protocol-item ext-link" onmouseenter="hoverItem('tab1', 'img-wound')"
-                            onmouseleave="restoreRegionImage('tab1')" ontouchstart="hoverItem('tab1', 'img-wound')"
-                            href="https://drive.google.com/drive/folders/1FQqTWZunZp0pbhMKfx-yrLtiZ0W5PZnR?usp=drive_link"
-                            target="_blank">020 傷口照護</a>
-                    </div>
+                    <!-- 選單：由 renderTab() 動態插入 -->
                 </div>
             </div>
         </div>
 
         <!-- ================= 頁籤二：醫院圖 ================= -->
+        <!-- 內容由 TAB2_DATA 資料表動態產生，見下方的 JS 區塊 -->
         <div id="tab2" class="content-area">
             <div class="visual-canvas" id="canvas-tab2">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab2')"></div>
-                <div class="ratio-container">
-                    <img id="base-hospital" src="./hostipal.png" class="base-image active-img">
-                    <img id="img-opd" src="./OPD.png" class="base-image">
-                    <img id="img-er" src="./ER.png" class="base-image">
-                    <img id="img-or" src="./OR.png" class="base-image">
-                    <img id="img-pharmacy" src="./Pharmacy.png" class="base-image">
-                    <img id="img-physio" src="./RD-NM-Physio.png" class="base-image">
-                    <img id="img-cancer" src="./Cancer_Care.png" class="base-image">
-                    <img id="img-hospice" src="./Hospice_care.png" class="base-image">
-
-                    <div class="hotspots-overlay">
-                        <div class="hotspot hotspot-opd" onmouseenter="hoverRegion('tab2', 'opd', 'img-opd')"
-                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'opd', 'img-opd')">
-                        </div>
-                        <div class="hotspot hotspot-er" onmouseenter="hoverRegion('tab2', 'er', 'img-er')"
-                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'er', 'img-er')"></div>
-                        <div class="hotspot hotspot-or" onmouseenter="hoverRegion('tab2', 'or', 'img-or')"
-                            onmouseleave="leaveHoverRegion('tab2')" onclick="lockRegion('tab2', 'or', 'img-or')"></div>
-                        <div class="hotspot hotspot-pharmacy"
-                            onmouseenter="hoverRegion('tab2', 'pharmacy', 'img-pharmacy')"
-                            onmouseleave="leaveHoverRegion('tab2')"
-                            onclick="lockRegion('tab2', 'pharmacy', 'img-pharmacy')"></div>
-                        <div class="hotspot hotspot-physio" onmouseenter="hoverRegion('tab2', 'physio', 'img-physio')"
-                            onmouseleave="leaveHoverRegion('tab2')"
-                            onclick="lockRegion('tab2', 'physio', 'img-physio')"></div>
-                        <div class="hotspot hotspot-hospice"
-                            onmouseenter="hoverRegion('tab2', 'hospice', 'img-hospice')"
-                            onmouseleave="leaveHoverRegion('tab2')"
-                            onclick="lockRegion('tab2', 'hospice', 'img-hospice')"></div>
-                        <div class="hotspot hotspot-cancer" onmouseenter="hoverRegion('tab2', 'cancer', 'img-cancer')"
-                            onmouseleave="leaveHoverRegion('tab2')"
-                            onclick="lockRegion('tab2', 'cancer', 'img-cancer')"></div>
-                    </div>
+                <div class="ratio-container" id="ratio-tab2">
+                    <div class="hotspots-overlay" id="hotspots-tab2"></div>
                 </div>
 
-                <div class="protocols-container" id="menus-tab2">
-                    <div id="menu-tab2-opd" class="protocol-btn hosp-btn pos-opd" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟦 門診區域 (OPD)</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1YxIvPCKZmObEV49wHzL1Ig_CMtxIUEkt?usp=drive_link"
-                            target="_blank">003 醫囑.會診</a>
-                    </div>
-                    <div id="menu-tab2-er" class="protocol-btn hosp-btn pos-er" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟧 急診區域 (ER)</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1VM4nAxDPZ6TukzIlfTTFqtcBzwoczTDz?usp=drive_link"
-                            target="_blank">006 緊急救護</a>
-                    </div>
-                    <div id="menu-tab2-or" class="protocol-btn hosp-btn pos-or" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟥 手術區域 (OR)</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1dRixMwUWKFF8ra9BO0UMXQF4ctlwPu5P?usp=drive_link"
-                            target="_blank">004 手術護理</a>
-                    </div>
-                    <div id="menu-tab2-pharmacy" class="protocol-btn hosp-btn pos-pharmacy"
-                        onmouseenter="enterMenu('tab2')" onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟩 藥物安全 (藥局)</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1JEUwKq4fzA9j4O-WjchVhgdWmDpIZ5k4?usp=drive_link"
-                            target="_blank">010 藥物安全</a>
-                    </div>
-                    <div id="menu-tab2-physio" class="protocol-btn hosp-btn pos-physio" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟪 放射/生理/檢驗/核醫</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1vGjMz_JR3A7bEJkKX4u8QKQ-xA6hwRii?usp=drive_link"
-                            target="_blank">019 放射、生理、檢驗、核醫</a>
-                    </div>
-                    <div id="menu-tab2-hospice" class="protocol-btn hosp-btn pos-hospice"
-                        onmouseenter="enterMenu('tab2')" onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🌸 安寧療護</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1cp0v1T-RggkdamHnsSw658JSivPHyZsm?usp=drive_link"
-                            target="_blank">018 安寧療護及臨終護理</a>
-                    </div>
-                    <div id="menu-tab2-cancer" class="protocol-btn hosp-btn pos-cancer" onmouseenter="enterMenu('tab2')"
-                        onmouseleave="leaveMenu('tab2')">
-                        <div class="protocol-title hosp-title">🟨 癌症照護</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1Wj3exP9S_cUY1dGlbkhSyB5qXhOq2ZRH?usp=drive_link"
-                            target="_blank">017 癌症照護</a>
-                    </div>
-                </div>
+                <div class="protocols-container" id="menus-tab2"></div>
             </div>
         </div>
 
         <!-- ================= 頁籤三：行政庶務圖 ================= -->
+        <!-- 內容由 TAB3_DATA 資料表動態產生，見下方的 JS 區塊 -->
         <div id="tab3" class="content-area">
             <div class="visual-canvas" id="canvas-tab3">
                 <div class="canvas-bg-clickable" onclick="resetCanvas('tab3')"></div>
-                <div class="ratio-container">
-                    <img id="base-desktop" src="./desktop.png" class="base-image active-img">
-                    <img id="img-admin" src="./Nursing_Administration.png" class="base-image">
-                    <img id="img-env" src="./Environment_Infection_Control.png" class="base-image">
-
-                    <div class="hotspots-overlay">
-                        <div class="hotspot hotspot-admin" onmouseenter="hoverRegion('tab3', 'admin', 'img-admin')"
-                            onmouseleave="leaveHoverRegion('tab3')" onclick="lockRegion('tab3', 'admin', 'img-admin')">
-                        </div>
-                        <div class="hotspot hotspot-env" onmouseenter="hoverRegion('tab3', 'env', 'img-env')"
-                            onmouseleave="leaveHoverRegion('tab3')" onclick="lockRegion('tab3', 'env', 'img-env')">
-                        </div>
-                    </div>
+                <div class="ratio-container" id="ratio-tab3">
+                    <div class="hotspots-overlay" id="hotspots-tab3"></div>
                 </div>
 
-                <div class="protocols-container" id="menus-tab3">
-                    <div id="menu-tab3-admin" class="protocol-btn desk-btn pos-admin" onmouseenter="enterMenu('tab3')"
-                        onmouseleave="leaveMenu('tab3')">
-                        <div class="protocol-title desk-title">📋 護理行政與交班</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1McWp-B02Lmik20HePdzV_CBaKSFVFMBO?usp=drive_link"
-                            target="_blank">005 出入院管理</a>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1AhJtnIKIGepHrB7NvqTdgOyxgtj1deas?usp=drive_link"
-                            target="_blank">021 護理交班及其他庶務</a>
-                    </div>
-                    <div id="menu-tab3-env" class="protocol-btn desk-btn pos-env" onmouseenter="enterMenu('tab3')"
-                        onmouseleave="leaveMenu('tab3')">
-                        <div class="protocol-title desk-title">🛡️ 環境與感染控制</div>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1BZI7cb09tgDLejy4EHjfnsvH8CKm2qF5?usp=drive_link"
-                            target="_blank">007 權益維護</a>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1IpkVTM-uRCQLxoX4P_nl07W9dttU1F6Y?usp=drive_link"
-                            target="_blank">008 醫療環境</a>
-                        <a class="protocol-item ext-link"
-                            href="https://drive.google.com/drive/folders/1ULWwyTdcmb0rW9Nvy-LqC1XcX-_WNcmc?usp=drive_link"
-                            target="_blank">009 感染管制委員會</a>
-                    </div>
-                </div>
+                <div class="protocols-container" id="menus-tab3"></div>
             </div>
         </div>
     </div>
 
     <script>
+        /* ============================================================
+           資料驅動設定 (Data-Driven Config)
+           ------------------------------------------------------------
+           新增 / 修改 / 刪除規範連結，只需要編輯下方 TAB1_DATA / TAB2_DATA /
+           TAB3_DATA 三個物件即可，不需要再手動同步 HTML 中的圖片、熱區、選單。
+           每個 region 會依 id 自動對應既有 CSS 類別：
+             .hotspot-{regionId}  (熱區座標，定義在 <style> 區)
+             .pos-{regionId}      (選單彈出位置，定義在 <style> 區)
+           若新增全新的 region，記得在 <style> 補上對應的
+           .hotspot-xxx / .pos-xxx 座標即可。
+           ============================================================ */
+
+        const TAB1_DATA = {
+            id: 'tab1',
+            baseImage: { id: 'base-human', src: './body.png', alt: '人體正面示意圖' },
+            images: [
+                { id: 'img-nervous', src: './Nervous_system.png', alt: '神經系統示意圖' },
+                { id: 'img-circulatory', src: './Circulatory_System.png', alt: '心臟血管系統示意圖' },
+                { id: 'img-respiratory', src: './Respiratory_system.png', alt: '呼吸系統示意圖' },
+                { id: 'img-digestive', src: './digestive_system.png', alt: '消化系統示意圖' },
+                { id: 'img-urinary', src: './Urinary_system.png', alt: '泌尿系統示意圖' },
+                { id: 'img-vital', src: './vital_sing.png', alt: '生命徵象示意圖' },
+                { id: 'img-fluid', src: './Fluid_supply.png', alt: '體液供給示意圖' },
+                { id: 'img-comfort', src: './Comfort_needs.png', alt: '舒適需要示意圖' },
+                { id: 'img-wound', src: './wound_care.png', alt: '傷口照護示意圖' }
+            ],
+            regions: [
+                {
+                    id: 'head', image: 'img-nervous', title: '🧠 頭部 (神經系統)', badge: null,
+                    items: [
+                        { no: '015', name: '神經感覺系統', url: 'https://drive.google.com/drive/folders/12VOsJeTQ-9hwwenurnduTRP0vrgo_xx7?usp=drive_link' }
+                    ]
+                },
+                {
+                    id: 'chest', image: 'img-circulatory', title: '🫁 胸部 (心肺系統)', badge: null,
+                    items: [
+                        { no: '013', name: '心臟血管系統護理', url: 'https://drive.google.com/drive/folders/1E37ZeXwyxT4jpMZoeNtkM1Fh1fgbKSwz?usp=drive_link', hoverImage: 'img-circulatory' },
+                        { no: '014', name: '呼吸系統', url: 'https://drive.google.com/drive/folders/1JJtMeUILg1M1nRFslp1-cR5Dv0qutPmY?usp=drive_link', hoverImage: 'img-respiratory' }
+                    ]
+                },
+                {
+                    id: 'abdomen', image: 'img-digestive', title: '🩺 腹部 (消化與泌尿)', badge: null,
+                    items: [
+                        { no: '012', name: '消化道系統護理', url: 'https://drive.google.com/drive/folders/1NfBIMXB8LZme0O1S5afTLTAZEEm5T7h7?usp=drive_link', hoverImage: 'img-digestive' },
+                        { no: '016', name: '腎臟泌尿系統', url: 'https://drive.google.com/drive/folders/1VIhzRwqwzf36dcTHrkgJAo6LJIuUDhke?usp=drive_link', hoverImage: 'img-urinary' }
+                    ]
+                },
+                {
+                    id: 'body', image: 'img-vital', title: '🩸 全身性 (體徵與皮膚)', badge: null,
+                    items: [
+                        { no: '001', name: '生命徵象.疼痛.情緒困擾', url: 'https://drive.google.com/drive/folders/1omd_6gZsQcPwunujpwxd84qgLnrx8e92?usp=drive_link', hoverImage: 'img-vital' },
+                        { no: '002', name: '體液供給', url: 'https://drive.google.com/drive/folders/1vSrsuosLLVV4ocY4h2b1eDl8C6BwYxB7?usp=drive_link', hoverImage: 'img-fluid' },
+                        { no: '011', name: '舒適需要', url: 'https://drive.google.com/drive/folders/1ODrOuVaCIt0mE9BH7CGAmJtQ0pQFqk9T?usp=drive_link', hoverImage: 'img-comfort' },
+                        { no: '020', name: '傷口照護', url: 'https://drive.google.com/drive/folders/1FQqTWZunZp0pbhMKfx-yrLtiZ0W5PZnR?usp=drive_link', hoverImage: 'img-wound' }
+                    ]
+                }
+            ]
+        };
+
+        const TAB2_DATA = {
+            id: 'tab2',
+            baseImage: { id: 'base-hospital', src: './hostipal.png', alt: '醫院平面示意圖' },
+            images: [
+                { id: 'img-opd', src: './OPD.png', alt: '門診區域示意圖' },
+                { id: 'img-er', src: './ER.png', alt: '急診區域示意圖' },
+                { id: 'img-or', src: './OR.png', alt: '手術區域示意圖' },
+                { id: 'img-pharmacy', src: './Pharmacy.png', alt: '藥局示意圖' },
+                { id: 'img-physio', src: './RD-NM-Physio.png', alt: '放射生理檢驗核醫示意圖' },
+                { id: 'img-cancer', src: './Cancer_Care.png', alt: '癌症照護示意圖' },
+                { id: 'img-hospice', src: './Hospice_care.png', alt: '安寧療護示意圖' }
+            ],
+            regions: [
+                {
+                    id: 'opd', image: 'img-opd', title: '🟦 門診區域 (OPD)', badge: 'hosp',
+                    items: [{ no: '003', name: '醫囑.會診', url: 'https://drive.google.com/drive/folders/1YxIvPCKZmObEV49wHzL1Ig_CMtxIUEkt?usp=drive_link' }]
+                },
+                {
+                    id: 'er', image: 'img-er', title: '🟧 急診區域 (ER)', badge: 'hosp',
+                    items: [{ no: '006', name: '緊急救護', url: 'https://drive.google.com/drive/folders/1VM4nAxDPZ6TukzIlfTTFqtcBzwoczTDz?usp=drive_link' }]
+                },
+                {
+                    id: 'or', image: 'img-or', title: '🟥 手術區域 (OR)', badge: 'hosp',
+                    items: [{ no: '004', name: '手術護理', url: 'https://drive.google.com/drive/folders/1dRixMwUWKFF8ra9BO0UMXQF4ctlwPu5P?usp=drive_link' }]
+                },
+                {
+                    id: 'pharmacy', image: 'img-pharmacy', title: '🟩 藥物安全 (藥局)', badge: 'hosp',
+                    items: [{ no: '010', name: '藥物安全', url: 'https://drive.google.com/drive/folders/1JEUwKq4fzA9j4O-WjchVhgdWmDpIZ5k4?usp=drive_link' }]
+                },
+                {
+                    id: 'physio', image: 'img-physio', title: '🟪 放射/生理/檢驗/核醫', badge: 'hosp',
+                    items: [{ no: '019', name: '放射、生理、檢驗、核醫', url: 'https://drive.google.com/drive/folders/1vGjMz_JR3A7bEJkKX4u8QKQ-xA6hwRii?usp=drive_link' }]
+                },
+                {
+                    id: 'hospice', image: 'img-hospice', title: '🌸 安寧療護', badge: 'hosp',
+                    items: [{ no: '018', name: '安寧療護及臨終護理', url: 'https://drive.google.com/drive/folders/1cp0v1T-RggkdamHnsSw658JSivPHyZsm?usp=drive_link' }]
+                },
+                {
+                    id: 'cancer', image: 'img-cancer', title: '🟨 癌症照護', badge: 'hosp',
+                    items: [{ no: '017', name: '癌症照護', url: 'https://drive.google.com/drive/folders/1Wj3exP9S_cUY1dGlbkhSyB5qXhOq2ZRH?usp=drive_link' }]
+                }
+            ]
+        };
+
+        const TAB3_DATA = {
+            id: 'tab3',
+            baseImage: { id: 'base-desktop', src: './desktop.png', alt: '辦公桌面示意圖' },
+            images: [
+                { id: 'img-admin', src: './Nursing_Administration.png', alt: '護理行政示意圖' },
+                { id: 'img-env', src: './Environment_Infection_Control.png', alt: '環境感染控制示意圖' }
+            ],
+            regions: [
+                {
+                    id: 'admin', image: 'img-admin', title: '📋 護理行政與交班', badge: 'desk',
+                    items: [
+                        { no: '005', name: '出入院管理', url: 'https://drive.google.com/drive/folders/1McWp-B02Lmik20HePdzV_CBaKSFVFMBO?usp=drive_link' },
+                        { no: '021', name: '護理交班及其他庶務', url: 'https://drive.google.com/drive/folders/1AhJtnIKIGepHrB7NvqTdgOyxgtj1deas?usp=drive_link' }
+                    ]
+                },
+                {
+                    id: 'env', image: 'img-env', title: '🛡️ 環境與感染控制', badge: 'desk',
+                    items: [
+                        { no: '007', name: '權益維護', url: 'https://drive.google.com/drive/folders/1BZI7cb09tgDLejy4EHjfnsvH8CKm2qF5?usp=drive_link' },
+                        { no: '008', name: '醫療環境', url: 'https://drive.google.com/drive/folders/1IpkVTM-uRCQLxoX4P_nl07W9dttU1F6Y?usp=drive_link' },
+                        { no: '009', name: '感染管制委員會', url: 'https://drive.google.com/drive/folders/1ULWwyTdcmb0rW9Nvy-LqC1XcX-_WNcmc?usp=drive_link' }
+                    ]
+                }
+            ]
+        };
+
+        /* ============================================================
+           圖片載入失敗 fallback：改用內嵌 SVG 佔位圖取代 <img>，
+           讓既有的淡入淡出 / mix-blend-mode 效果不需額外處理即可沿用。
+           ============================================================ */
+        const IMG_FALLBACK_SRC = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">' +
+            '<rect width="800" height="450" fill="#f1f3f5"/>' +
+            '<text x="400" y="210" font-size="26" text-anchor="middle" fill="#adb5bd" font-family="Microsoft JhengHei, sans-serif">⚠ 圖片載入失敗</text>' +
+            '<text x="400" y="248" font-size="15" text-anchor="middle" fill="#ced4da" font-family="Microsoft JhengHei, sans-serif">請確認圖片檔案是否存在</text>' +
+            '</svg>'
+        );
+
+        function handleImageError(imgEl) {
+            if (imgEl.dataset.fallbackApplied) return; // 避免 SVG 佔位圖也觸發 onerror 造成無窮迴圈
+            imgEl.dataset.fallbackApplied = 'true';
+            console.warn('[圖片載入失敗]', imgEl.id, imgEl.getAttribute('data-original-src') || imgEl.src);
+            imgEl.src = IMG_FALLBACK_SRC;
+        }
+
+        /* ============================================================
+           依 TAB_DATA 動態產生 圖片 / 熱區 / 選單
+           - 圖片統一加上 loading="lazy"：未啟用的頁籤（display:none）
+             瀏覽器會延後下載其圖片，改善初次載入效能。
+           - 圖片統一加上 onerror fallback，避免破圖。
+           ============================================================ */
+        function renderTab(data) {
+            const ratioContainer = document.getElementById(`ratio-${data.id}`);
+            const hotspotsContainer = document.getElementById(`hotspots-${data.id}`);
+            const menusContainer = document.getElementById(`menus-${data.id}`);
+
+            // 1. 圖片（底圖 + 各系統/區域圖），插入在 hotspots-overlay 之前
+            const allImages = [data.baseImage, ...data.images];
+            const imagesHtml = allImages.map((img, idx) => `
+                <img id="${img.id}" src="${img.src}" data-original-src="${img.src}"
+                     class="base-image${idx === 0 ? ' active-img' : ''}"
+                     loading="lazy" alt="${img.alt || ''}"
+                     onerror="handleImageError(this)">
+            `).join('');
+            hotspotsContainer.insertAdjacentHTML('beforebegin', imagesHtml);
+
+            // 2. 熱區
+            hotspotsContainer.innerHTML = data.regions.map(region => `
+                <div class="hotspot hotspot-${region.id}"
+                     onmouseenter="hoverRegion('${data.id}', '${region.id}', '${region.image}')"
+                     onmouseleave="leaveHoverRegion('${data.id}')"
+                     onclick="lockRegion('${data.id}', '${region.id}', '${region.image}')"></div>
+            `).join('');
+
+            // 3. 選單
+            menusContainer.innerHTML = data.regions.map(region => {
+                const badgeBtnClass = region.badge ? `${region.badge}-btn` : '';
+                const badgeTitleClass = region.badge ? `${region.badge}-title` : '';
+                const itemsHtml = region.items.map(item => {
+                    const hoverAttrs = item.hoverImage
+                        ? `onmouseenter="hoverItem('${data.id}', '${item.hoverImage}')" onmouseleave="restoreRegionImage('${data.id}')" ontouchstart="hoverItem('${data.id}', '${item.hoverImage}')"`
+                        : '';
+                    return `<a class="protocol-item ext-link" ${hoverAttrs} href="${item.url}" target="_blank">${item.no} ${item.name}</a>`;
+                }).join('');
+                return `
+                <div id="menu-${data.id}-${region.id}" class="protocol-btn ${badgeBtnClass} pos-${region.id}"
+                     onmouseenter="enterMenu('${data.id}')" onmouseleave="leaveMenu('${data.id}')">
+                    <div class="protocol-title ${badgeTitleClass}">${region.title}</div>
+                    ${itemsHtml}
+                </div>`;
+            }).join('');
+        }
+
         const state = {
             tab1: { isLocked: false, lockedRegion: null, lockedImageId: null, hoveredImageId: null, baseImageId: 'base-human' },
             tab2: { isLocked: false, lockedRegion: null, lockedImageId: null, hoveredImageId: null, baseImageId: 'base-hospital' },
@@ -996,18 +1003,24 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            const openInExternalBrowser = function (e) {
-                let url = this.href;
+            // 依資料表產生三個頁籤的圖片 / 熱區 / 選單
+            renderTab(TAB1_DATA);
+            renderTab(TAB2_DATA);
+            renderTab(TAB3_DATA);
+
+            // 外部連結改用事件代理 (event delegation)：
+            // 因為 a.ext-link 現在是由 renderTab() 動態產生，
+            // DOMContentLoaded 當下尚未存在，改用 document 層級監聽即可涵蓋所有動態內容。
+            document.addEventListener('click', function (e) {
+                const link = e.target.closest('a.ext-link');
+                if (!link) return;
+                const url = link.href;
                 if (!url.includes('openExternalBrowser=1') && url !== '#' && !url.startsWith('javascript')) {
                     e.preventDefault();
                     const separator = url.includes('?') ? '&' : '?';
                     const newUrl = url + separator + 'openExternalBrowser=1';
                     window.open(newUrl, '_blank');
                 }
-            };
-
-            document.querySelectorAll('a.ext-link').forEach(link => {
-                link.addEventListener('click', openInExternalBrowser);
             });
         });
     </script>
